@@ -4,6 +4,7 @@ import './index.css'
 import MainSection from './MainSection.tsx'
 import Header from './Header.tsx'
 import Campains from './Campains.tsx'
+import TrustSection from './TrustSection.tsx'
 
 
 createRoot(document.getElementById('root')!).render(
@@ -12,5 +13,6 @@ createRoot(document.getElementById('root')!).render(
     <div className="h-10" />
     <MainSection />
     <Campains />
+    <TrustSection />
   </React.StrictMode>
 )

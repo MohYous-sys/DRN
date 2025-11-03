@@ -4,7 +4,7 @@ const Header = () => {
   const ghostIconButtonClasses = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors h-10 w-10 p-0 hover:bg-gray-100/50";
   
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-sm border-b border-border">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-20">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-2">
