@@ -6,7 +6,7 @@ export default function MainSection() {
     <div className="pb-12 bg-gray-50 flex flex-col items-center">
       <div className="w-full max-w-6xl mt-12 rounded-xl overflow-hidden shadow-md relative">
         <img
-          src="https://images.pexels.com/photos/28317514/pexels-photo-28317514.jpeg"
+          src="https://images.pexels.com/photos/68138/fire-danger-dangerous-fight-68138.jpeg"
           className="w-full h-[425px] object-cover"
         />
         <div className="absolute inset-0 bg-orange-400/70 flex flex-col justify-center items-center text-center px-6 text-white">

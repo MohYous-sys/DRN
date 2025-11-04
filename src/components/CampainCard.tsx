@@ -45,7 +45,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         </div>
       </div>
 
-      <div className="p-6">
+      <div className="p-2">
         <h3 className="text-xl font-bold mb-2">{title}</h3>
         <p className="text-sm text-gray-500 mb-4 flex items-center">
           <svg className="w-4 h-4 mr-1 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.828 0L6.343 16.657A8 8 0 1117.657 16.657z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>

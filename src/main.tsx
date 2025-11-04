@@ -5,7 +5,8 @@ import MainSection from './MainSection.tsx'
 import Header from './Header.tsx'
 import Campains from './Campains.tsx'
 import TrustSection from './TrustSection.tsx'
-
+import TestimonialsSection from './Testimonies.tsx'
+import LiveUpdatesSection from './LiveUpdates.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -14,5 +15,7 @@ createRoot(document.getElementById('root')!).render(
     <MainSection />
     <Campains />
     <TrustSection />
+    <TestimonialsSection />
+    <LiveUpdatesSection />
   </React.StrictMode>
 )

@@ -13,10 +13,10 @@ const campaigns = [
     supporters: 342,
     time: "2 hours",
     isCritical: true,
-    imageSrc: 'https://images.unsplash.com/photo-1549418654-7220268a86a0?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mnx8d2lsZGZpcmV8ZW58MHx8MHx8fDA%3D', // Placeholder image
+    imageSrc: 'https://images.pexels.com/photos/3552472/pexels-photo-3552472.jpeg', // Placeholder image
   },
   {
-    title: "Bangladesh Delta Monsoon Flooding",
+    title: "Bangladesh Delta Monsoon Flooding Season",
     location: "Bangladesh Delta",
     description: "Severe monsoon flooding affecting 50,000 people. Emergency supplies and medical aid urgently needed.",
     update: "Water levels rising at 3cm/hour. Medical teams on-site, setting up clinics.",
@@ -25,7 +25,7 @@ const campaigns = [
     supporters: 521,
     time: "6 hours",
     isCritical: false,
-    imageSrc: 'https://images.unsplash.com/photo-1628178945229-ec45f3408c5c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Nnx8Zmxvb2Rpbmd8ZW58MHx8MHx8fDA%3D', // Placeholder image
+    imageSrc: 'https://images.pexels.com/photos/2382896/pexels-photo-2382896.jpeg', // Placeholder image
   }
 ];
 
@@ -38,7 +38,7 @@ const donations = [
 
 function App() {
   return (
-    <div className="min-h-screen bg-gray-50 px-4 sm:px-6 lg:px-8">
+    <div className="pb-12 bg-gray-50 px-4 sm:px-6 lg:px-8">
       
       <header className="max-w-4xl mx-auto text-center mb-10">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">
