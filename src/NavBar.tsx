@@ -19,7 +19,6 @@ const Navbar = () => {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 py-3 flex items-center justify-between">
-        {/* Logo / Title */}
         <div className="flex items-center gap-2">
           <span className="text-red-500 text-lg">❤️</span>
           <h1
@@ -31,7 +30,6 @@ const Navbar = () => {
           </h1>
         </div>
 
-        {/* Navigation Links */}
         <ul className="flex items-center gap-6">
           {["About", "Impact", "Our Causes", "Get Involved"].map((item) => (
             <li key={item}>

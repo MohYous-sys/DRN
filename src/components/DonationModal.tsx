@@ -81,9 +81,9 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose }) => {
       <p className="text-sm text-gray-500 mb-8">You've directly funded life-saving resources for those impacted by the disaster.</p>
       <button
         onClick={onRestart}
-        className="px-6 py-3 rounded-xl font-medium bg-gray-600 text-white hover:bg-gray-700 shadow-lg transition-all"
+        className="px-6 py-3 rounded-xl font-medium bg-gray-900 text-white hover:bg-gray-800 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50"
       >
-        Donate Again
+        Done!
       </button>
     </div>
   );
@@ -127,7 +127,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose }) => {
                   onClick={() => setMode('specific')}
                   className={`pb-2 px-4 text-sm font-medium transition ${
                     mode === 'specific'
-                      ? 'text-red-600 border-b-2 border-red-600'
+                      ? 'text-gray-900 border-b-2 border-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -137,7 +137,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose }) => {
                   onClick={() => setMode('custom')}
                   className={`pb-2 px-4 text-sm font-medium transition ${
                     mode === 'custom'
-                      ? 'text-red-600 border-b-2 border-red-600'
+                      ? 'text-gray-900 border-b-2 border-gray-900'
                       : 'text-gray-500 hover:text-gray-700'
                   }`}
                 >
@@ -152,15 +152,15 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose }) => {
                       <div
                         key={resource.id}
                         style={{ animation: `slideUpFadeIn 0.5s ease-out forwards`, animationDelay: `${index * 0.08}s`, opacity: 0 }}
-                        className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 ease-in-out ${
+                        className={`flex items-center justify-between p-4 rounded-xl cursor-pointer transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50 ${
                           selectedItems.includes(resource.id)
-                            ? 'bg-red-50 border border-red-300 shadow-md transform scale-[1.01]'
+                            ? 'bg-gray-900 text-white border border-gray-700 shadow-md transform scale-[1.01]'
                             : 'bg-gray-50 border border-gray-200 hover:bg-gray-100 hover:shadow-sm'
                         }`}
                         onClick={() => toggleItem(resource.id)}
                       >
                         <div className="flex items-center">
-                          <div className={`w-4 h-4 mr-3 flex items-center justify-center rounded-sm border-2 transition-colors duration-200 ${selectedItems.includes(resource.id) ? 'bg-red-600 border-red-600' : 'border-gray-300'}`}>
+                          <div className={`w-4 h-4 mr-3 flex items-center justify-center rounded-sm border-2 transition-colors duration-200 ${selectedItems.includes(resource.id) ? 'bg-gray-900 border-gray-900' : 'border-gray-300'}`}>
                             {selectedItems.includes(resource.id) && (
                               <svg
                                 key={`${resource.id}-check`}
@@ -172,11 +172,11 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose }) => {
                             )}
                           </div>
                           <div>
-                            <p className="text-sm font-semibold text-gray-800">{resource.name}</p>
-                            <p className="text-xs text-gray-500">{resource.description}</p>
+                            <p className={`text-sm font-semibold ${selectedItems.includes(resource.id) ? 'text-white' : 'text-gray-800'}`}>{resource.name}</p>
+                            <p className={`text-xs ${selectedItems.includes(resource.id) ? 'text-gray-300' : 'text-gray-500'}`}>{resource.description}</p>
                           </div>
                         </div>
-                        <span className="text-sm font-bold text-gray-700 ml-4">${resource.price}</span>
+                        <span className={`text-sm font-bold ml-4 ${selectedItems.includes(resource.id) ? 'text-white' : 'text-gray-700'}`}>${resource.price}</span>
                       </div>
                     ))}
                   </div>
@@ -236,7 +236,7 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose }) => {
                 disabled={isProcessing || totalAmount <= 0}
                 className={`px-6 py-3 rounded-xl font-medium transition-all duration-200 ${
                   totalAmount > 0
-                    ? 'bg-red-600 text-white hover:bg-red-700 shadow-lg hover:shadow-xl'
+                    ? 'bg-gray-900 text-white hover:bg-gray-800 shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-opacity-50'
                     : 'bg-gray-400 text-gray-700 cursor-not-allowed'
                 } ${isProcessing ? 'relative overflow-hidden' : ''}`}
               >

@@ -36,7 +36,7 @@ const donations = [
   { initial: 'A', name: 'Alex K.', amount: 100, campaign: 'to Bangladesh Flood Relief', time: '6 min ago' },
 ];
 
-function App() {
+function CampaignsComponent() {
   return (
     <div className="pb-12 bg-gray-50 px-4 sm:px-6 lg:px-8">
       
@@ -66,4 +66,4 @@ function App() {
   );
 }
 
-export default App;
+export default CampaignsComponent;

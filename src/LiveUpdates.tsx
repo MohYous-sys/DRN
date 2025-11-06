@@ -1,6 +1,5 @@
 import { Radio, AlertCircle, Users, Trophy } from "lucide-react";
 
-// Helper function to map custom badge types to Tailwind classes
 type BadgeType = "sensor" | "rescue" | "placed" | string;
 type BadgeVariant = "secondary" | "default" | string;
 
@@ -30,7 +29,7 @@ interface Contributor {
 }
 
 const getBadgeClasses = (badgeType: BadgeType | null = null, variant: BadgeVariant | null = null): string => {
-    const baseClasses: string = "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0";
+    const baseClasses: string = "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 flex-shrink-0";
 
     if (variant === "secondary") {
         return `${baseClasses} bg-gray-100 text-gray-700 hover:bg-gray-200`;
@@ -40,7 +39,7 @@ const getBadgeClasses = (badgeType: BadgeType | null = null, variant: BadgeVaria
         return `${baseClasses} bg-red-600 text-white hover:bg-red-700`;
     }
 
-    return `${baseClasses} bg-blue-600 text-white hover:bg-blue-700`;
+    return `${baseClasses} bg-red-600 text-white hover:bg-red-700`;
 };
 
 const LiveUpdatesSection = () => {
@@ -120,10 +119,8 @@ const LiveUpdatesSection = () => {
     <section className="py-16 px-4 bg-gray-50">
       <div className="container mx-auto max-w-7xl">
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Live Updates */}
           <div>
             <div className="flex items-center gap-2 mb-6">
-              {/* Using red as proxy for 'emergency' */}
               <Radio className="w-6 h-6 text-red-500 animate-pulse" /> 
               <h2 className="text-2xl font-bold text-gray-900">Live Updates</h2>
             </div>
@@ -132,7 +129,6 @@ const LiveUpdatesSection = () => {
               {liveUpdates.map((update, index) => {
                 const Icon = update.icon;
                 return (
-                  // Replaced <Card> with a styled <div>
                   <div 
                     key={index} 
                     className="p-5 border rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
@@ -223,7 +219,7 @@ const LiveUpdatesSection = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start gap-2 mb-1">
                         <p className="font-bold text-gray-900">{contributor.name}</p>
-                        <span className="text-sm font-bold text-blue-600 whitespace-nowrap">
+                        <span className="text-sm font-bold text-red-600 whitespace-nowrap">
                           ${contributor.amount.toLocaleString()}
                         </span>
                       </div>
