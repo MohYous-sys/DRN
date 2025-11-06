@@ -30,20 +30,16 @@ interface Contributor {
 }
 
 const getBadgeClasses = (badgeType: BadgeType | null = null, variant: BadgeVariant | null = null): string => {
-    // Common badge styling
     const baseClasses: string = "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex-shrink-0";
 
     if (variant === "secondary") {
-        // For Top Contributor badges
         return `${baseClasses} bg-gray-100 text-gray-700 hover:bg-gray-200`;
     }
     
     if (badgeType === "sensor" || badgeType === "rescue") {
-        // Equivalent to 'destructive' variant (for high-priority updates)
         return `${baseClasses} bg-red-600 text-white hover:bg-red-700`;
     }
 
-    // Equivalent to 'default' or 'placed'
     return `${baseClasses} bg-blue-600 text-white hover:bg-blue-700`;
 };
 
@@ -149,7 +145,6 @@ const LiveUpdatesSection = () => {
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h3 className="font-bold text-gray-900">{update.title}</h3>
                           
-                          {/* Replaced <Badge> with a styled <span> */}
                           <span className={getBadgeClasses(update.badge)}>
                             {update.badge}
                           </span>
@@ -193,26 +188,21 @@ const LiveUpdatesSection = () => {
             </div>
           </div>
 
-          {/* Top Contributors */}
           <div>
             <div className="flex items-center gap-2 mb-6">
-              {/* Using orange/yellow as proxy for 'warning' */}
               <Trophy className="w-6 h-6 text-yellow-500" /> 
               <h2 className="text-2xl font-bold text-gray-900">Top Contributors</h2>
             </div>
 
-            {/* Replaced <Card> with a styled <div> */}
             <div className="p-5 border rounded-lg bg-white shadow-sm">
               <div className="space-y-4">
                 {topContributors.map((contributor, index) => (
                   <div
                     key={index}
-                    // Replaced 'border-border' with 'border-gray-200'
                     className="flex items-start gap-3 pb-4 border-b border-gray-200 last:border-0 last:pb-0"
                   >
                     <div className="flex items-center gap-2">
                       {contributor.rank <= 3 ? (
-                        // Using yellow as proxy for 'warning'
                         <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center flex-shrink-0">
                           <Trophy className="w-5 h-5 text-yellow-500" />
                         </div>
@@ -223,9 +213,8 @@ const LiveUpdatesSection = () => {
                           </span>
                         </div>
                       )}
-                      {/* Using blue as proxy for 'primary' */}
-                      <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
-                        <span className="text-sm font-bold text-blue-600">
+                      <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+                        <span className="text-sm font-bold text-gray-600">
                           {contributor.name.split(" ").map(n => n[0]).join("")}
                         </span>
                       </div>
@@ -234,7 +223,6 @@ const LiveUpdatesSection = () => {
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start gap-2 mb-1">
                         <p className="font-bold text-gray-900">{contributor.name}</p>
-                        {/* Using blue as proxy for 'primary' */}
                         <span className="text-sm font-bold text-blue-600 whitespace-nowrap">
                           ${contributor.amount.toLocaleString()}
                         </span>
@@ -244,7 +232,6 @@ const LiveUpdatesSection = () => {
                       </p>
                       <div className="flex flex-wrap gap-1">
                         {contributor.badges.map((badge, badgeIndex) => (
-                          // Replaced <Badge> with a styled <span> using getBadgeClasses helper
                           <span 
                             key={badgeIndex} 
                             className={`${getBadgeClasses(null, "secondary")} text-xs`}
@@ -253,7 +240,6 @@ const LiveUpdatesSection = () => {
                           </span>
                         ))}
                         {contributor.rank === 1 && (
-                          // Replaced <Badge> with a styled <span> using getBadgeClasses helper (default/primary color)
                           <span className={`${getBadgeClasses(null, "default")} text-xs`}>
                             +1
                           </span>
@@ -262,13 +248,6 @@ const LiveUpdatesSection = () => {
                     </div>
                   </div>
                 ))}
-              </div>
-
-              {/* Replaced 'border-border' with 'border-gray-200' */}
-              <div className="mt-6 pt-4 border-t border-gray-200 text-center">
-                <p className="text-sm text-yellow-500">
-                  Join our community of heroes making a difference
-                </p>
               </div>
             </div>
           </div>
