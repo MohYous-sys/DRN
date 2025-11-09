@@ -33,11 +33,9 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { user } = useAuth();
-  // normalize numeric inputs
   const safeRaised = Number(raised || 0);
   const safeGoal = Number(goal || 0);
   const safeSupporters = Number(supporters || 0);
-  // percent (clamped to 100) and remaining amount
   const percentage = safeGoal > 0 ? Math.round(Math.min(1, safeRaised / safeGoal) * 100) : 100;
   const goalRemaining = Math.max(0, safeGoal - safeRaised);
 

@@ -73,8 +73,6 @@ const TabsNavigation = ({ activeTab, tabs, onTabClick }: TabsNavigationProps) =>
 const AdminPanelComponent = () => {
   const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('Overview');
-
-  // Live data from backend
   const [statsData, setStatsData] = useState<null | { totalDonations: number; activeCampaigns: number; donors: number; numberOfSupplies: number }>(null);
   const [campaigns, setCampaigns] = useState<any[] | null>(null);
   const [donations, setDonations] = useState<any[] | null>(null);
@@ -82,9 +80,8 @@ const AdminPanelComponent = () => {
   const [error, setError] = useState<string | null>(null);
   const [editingCampaign, setEditingCampaign] = useState<any | null>(null);
 
-  const tabs = ['Disasters', 'Campaigns', 'Donations', 'Needs', 'Users', 'Feedback'];
+  const tabs = ['Campaigns', 'Donations', 'Users'];
 
-  // Build displayable stats used by the UI (falls back to placeholders)
   const summaryStats = statsData
     ? [
         { title: 'Total Donations', value: `$${statsData.totalDonations}`, detail: `${statsData.numberOfSupplies} supplies`, icon: DollarSign, valueColor: 'text-black' },
@@ -99,7 +96,6 @@ const AdminPanelComponent = () => {
         { title: 'Pending Feedback', value: '0', detail: '—', icon: MessageSquare, valueColor: 'text-red-700' },
       ];
 
-  // Refresh all admin datasets
   const refreshData = async () => {
     setLoading(true);
     setError(null);
@@ -121,7 +117,6 @@ const AdminPanelComponent = () => {
   };
 
   useEffect(() => {
-    // initial load
     refreshData();
   }, []);
   
@@ -145,7 +140,6 @@ const AdminPanelComponent = () => {
             {loading && <p className="text-gray-500">Loading campaigns...</p>}
             {error && <p className="text-red-600">{error}</p>}
 
-            {/* Campaign modal for create/edit */}
             {editingCampaign && (
               <CampaignModal
                 campaign={editingCampaign}
@@ -221,7 +215,6 @@ const AdminPanelComponent = () => {
           <div className="mt-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
             <h2 className="text-2xl font-bold text-blue-600 mb-4">User Account Management</h2>
             <p className="text-gray-600">The backend currently exposes session status but not a public "list users" endpoint. You can use the session status to confirm admin login.</p>
-            {/* Try session status */}
             <button
               onClick={async () => {
                 setLoading(true); setError(null);

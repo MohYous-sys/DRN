@@ -40,10 +40,9 @@ function CampaignsComponent() {
     };
     load();
 
-    // Listen for donation completion events to refresh campaigns
     const handleDonationCompleted = () => {
       if (mounted) {
-        load(); // Reload campaigns to get updated CurrentAmount
+        load(); 
       }
     };
     window.addEventListener('donation:completed', handleDonationCompleted);
@@ -75,10 +74,8 @@ function CampaignsComponent() {
                 location: row.Location || 'Unknown',
                 description: row.Description || '',
                 update: row.Urgency || 'No updates',
-                // Use CurrentAmount from backend if available
                 raised: Number(row.CurrentAmount || 0),
                 goal: Number(row.Goal || 0),
-                // Backend returns numberOfDonators in campaigns route
                 supporters: Number((row as any).numberOfDonators || 0),
                 time: row.Due || 'N/A',
                 isCritical: (row.Urgency || '').toLowerCase() === 'critical',

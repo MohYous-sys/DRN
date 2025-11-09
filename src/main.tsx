@@ -12,13 +12,9 @@ import { AuthProvider, useAuth } from './auth/AuthContext';
 
 const App = () => {
   const { user } = useAuth();
-
-  // If user is admin, only show admin panel
   if (user?.isAdmin) {
     return <AdminPanel />;
   }
-
-  // Otherwise show regular content
   return (
     <>
       <Header />

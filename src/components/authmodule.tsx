@@ -1,19 +1,16 @@
 import React, { useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 
-// --- Standalone Authentication Modal Component ---
-
 interface AuthModalProps {
   onClose?: () => void;
 }
 
 const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
-  const [activeTab, setActiveTab] = useState('Login'); // 'Login' or 'Sign Up'
+  const [activeTab, setActiveTab] = useState('Login');
   const { setUser } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
 
-  // NOTE: We are using a custom message box instead of alert()
   const [message, setMessage] = useState('');
 
   interface AuthActionEvent extends React.FormEvent<HTMLFormElement> {}
@@ -25,7 +22,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
     setLoading(true);
     setMessage('');
 
-  // Use Username field
   const Username = username.trim();
     const Password = password;
 
@@ -34,20 +30,18 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
       const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include', // important for session cookies
+        credentials: 'include', 
         body: JSON.stringify({ Username, Password })
       });
 
       const data = await res.json().catch(() => ({}));
 
       if (res.ok) {
-        // Success: show message, reset inputs
   const successMessage = data.message || `${activeTab} successful.`;
   setMessage(successMessage);
   setUsername('');
         setPassword('');
 
-        // If signup, attempt auto-login so user is immediately authenticated
         if (activeTab === 'Sign Up') {
           try {
             const loginRes = await fetch('/api/users/login', {
@@ -58,26 +52,21 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
             });
             const loginData = await loginRes.json().catch(() => ({}));
             if (loginRes.ok && loginData.user) {
-              // set global user
               try { setUser(loginData.user); } catch (err) {}
             }
           } catch (err) {
             console.warn('Auto-login after signup failed', err);
           }
         } else {
-          // For login flow, backend returns session user
           if (data.user) {
             try { setUser(data.user); } catch (err) {}
           }
         }
-
-        // Close modal after short delay so user sees message
         setTimeout(() => {
           setMessage('');
           handleClose();
         }, 1000);
       } else {
-        // Handle known status codes
         if (res.status === 409) {
           setMessage(data.error || 'Username already exists.');
         } else if (res.status === 401 || res.status === 403) {
@@ -91,7 +80,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
       setMessage('Network error — please try again.');
     } finally {
       setLoading(false);
-      // clear message after a few seconds if not already closing
       setTimeout(() => setMessage(''), 3000);
     }
   };
@@ -108,31 +96,24 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   const isFormValid = username.length > 0 && password.length >= 6;
 
   return (
-    // Overlay: fixed and covers the viewport, centered content, high z-index
     <div onClick={handleClose} style={{ zIndex: 99999 }} className="fixed inset-0 bg-black bg-opacity-60 font-sans antialiased flex items-center justify-center p-4">
-        {/* Custom Message Box */}
     {message && (
-      <div style={{ zIndex: 100000 }} className="fixed top-4 right-4 bg-green-500 text-white p-3 rounded-lg shadow-xl transition-opacity duration-300 animate-slide-in">
+      <div style={{ zIndex: 100000 }} className="fixed top-4 right-4 bg-red-500 text-white p-3 rounded-lg shadow-xl transition-opacity duration-300 animate-slide-in">
         {message}
       </div>
     )}
         
-  {/* Modal Container (stop propagation so clicks inside don't close modal) */}
   <div onClick={(e) => e.stopPropagation()} className="bg-white w-full max-w-sm mx-auto rounded-xl shadow-2xl transform transition-all duration-300">
-        
-        {/* Header */}
         <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <div className="flex flex-col">
             <h3 className="text-xl font-bold text-gray-900">Welcome to Disaster Response Network</h3>
             <p className="text-sm text-gray-500 mt-1">Join our community of donors making a real difference</p>
           </div>
-          {/* Close button */}
           <button onClick={handleClose} className="text-gray-400 hover:text-gray-600 transition ml-4">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12"></path></svg>
           </button>
         </div>
 
-        {/* Tabs */}
         <div className="px-6 pt-6">
           <div className="flex p-1 bg-gray-100 rounded-full mb-6 shadow-inner">
             <button
@@ -157,10 +138,8 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
             </button>
           </div>
 
-          {/* Form */}
           <form onSubmit={handleAuthAction} className="space-y-4">
             
-            {/* Username Field */}
               <div>
                 <label htmlFor="username" className="block text-sm font-medium text-gray-700">Username</label>
                 <div className="mt-1 relative rounded-lg shadow-sm">
@@ -179,7 +158,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
                 </div>
               </div>
 
-            {/* Password Field */}
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
               <div className="mt-1 relative rounded-lg shadow-sm">
@@ -202,7 +180,6 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
               </p>
             </div>
             
-            {/* Primary Button */}
             <button
               type="submit"
               disabled={!isFormValid || loading}

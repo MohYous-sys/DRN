@@ -53,14 +53,8 @@ const RecentDonations = ({ donations }: RecentDonationsProps) => {
         const campaignMap = new Map<number, string>();
         campData.forEach((c: any) => campaignMap.set(c.ID, c.Title || 'Unknown'));
 
-        // Backend returns donations ordered by ID DESC (newest first)
-        // Take first 10 items (most recent) and display in same order
-        // Result: newest donation appears first in the list, oldest of the 10 appears last
         const mapped = (donData || []).slice(0, 10).map((d: any) => {
-          // Use DonorUsername if available (from backend JOIN), otherwise fall back to 'Anonymous'
-          // Donor is the user ID (number), DonorUsername is the username (string)
           const name = d.DonorUsername || 'Anonymous';
-          // Ensure name is a string before calling charAt
           const nameStr = String(name || 'Anonymous');
           const initial = nameStr ? nameStr.charAt(0).toUpperCase() : 'A';
           const amount = Number(d.Amount || 0);

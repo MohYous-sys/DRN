@@ -61,13 +61,10 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose, campaignId }) =>
       console.error("Donation amount must be greater than $0.00");
       return;
     }
-
-    // Check if user is logged in
     if (!user) {
       console.error("You must be logged in to make a donation");
       return;
     }
-
     if (!campaignId) {
       console.error("Campaign ID is required");
       return;
@@ -76,7 +73,6 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose, campaignId }) =>
     setIsProcessing(true);
 
     try {
-      // Map selected resource IDs to resource names for the Supplies array
       const supplies = mode === 'specific' 
         ? resources.filter(r => selectedItems.includes(r.id)).map(r => r.name)
         : [];
@@ -86,12 +82,11 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose, campaignId }) =>
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // Important: sends session cookie
+        credentials: 'include', 
         body: JSON.stringify({
           Amount: totalAmount,
           Supplies: supplies,
           CampaignID: campaignId,
-          // Note: Donor ID is automatically retrieved from session by backend
         }),
       });
 
@@ -101,12 +96,10 @@ const DonationModal: React.FC<DonationModalProps> = ({ onClose, campaignId }) =>
         throw new Error(data.error || 'Failed to process donation');
       }
 
-      // Success!
       setIsProcessing(false);
       setIsSuccess(true);
       console.log(`Donation of $${totalAmount.toFixed(2)} completed!`, data);
 
-      // Notify the app that a donation occurred so other components can update
       try {
         window.dispatchEvent(new CustomEvent('donation:completed', { 
           detail: { amount: totalAmount, campaignId: campaignId } 
