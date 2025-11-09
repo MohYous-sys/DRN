@@ -8,12 +8,19 @@ import TrustSection from './TrustSection.tsx'
 import TestimonialsSection from './Testimonies.tsx'
 import LiveUpdatesSection from './LiveUpdates.tsx'
 import AdminPanel from "./AdminPanel.tsx";
-import { AuthProvider } from './auth/AuthContext';
+import { AuthProvider, useAuth } from './auth/AuthContext';
 
-createRoot(document.getElementById('root')!).render(
-  <React.StrictMode>
-    <AuthProvider>
-      <AdminPanel />  
+const App = () => {
+  const { user } = useAuth();
+
+  // If user is admin, only show admin panel
+  if (user?.isAdmin) {
+    return <AdminPanel />;
+  }
+
+  // Otherwise show regular content
+  return (
+    <>
       <Header />
       <div className="h-10" />
       <MainSection />
@@ -21,6 +28,14 @@ createRoot(document.getElementById('root')!).render(
       <TrustSection />
       <TestimonialsSection />
       <LiveUpdatesSection />
+    </>
+  );
+};
+
+createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <AuthProvider>
+      <App />
     </AuthProvider>
   </React.StrictMode>
 )
