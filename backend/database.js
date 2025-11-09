@@ -29,7 +29,8 @@ const createCampaignsTable = `
     Image VARCHAR(255),
     Goal DECIMAL(15, 2) NOT NULL,
     CurrentAmount DECIMAL(15, 2) DEFAULT 0.00,
-    Due DATE
+    Due DATE,
+    isDeleted TINYINT(1) DEFAULT 0
   );
 `;
 
@@ -43,7 +44,7 @@ const dropForeignKey = `
 `;
 
 const addForeignKey = `
-  ALTER TABLE Donations ADD CONSTRAINT donations_ibfk_2 FOREIGN KEY (CampaignID) REFERENCES Campaigns(ID) ON DELETE CASCADE;
+  ALTER TABLE Donations ADD CONSTRAINT donations_ibfk_2 FOREIGN KEY (CampaignID) REFERENCES Campaigns(ID) ON DELETE RESTRICT;
 `;
 
 const createDonationsTable = `
@@ -108,6 +109,20 @@ async function setupDatabase() {
     } catch (err) {
       if (err.code !== 'ER_BAD_FIELD_ERROR' && err.code !== 'ER_DUP_FIELDNAME') {
         console.log('Note: CurrentAmount column migration skipped:', err.message);
+      }
+    }
+
+    // Add isDeleted column to existing Campaigns table if it doesn't exist
+    try {
+      const columnInfo = await conn.query('SHOW COLUMNS FROM Campaigns WHERE Field = ?', ['isDeleted']);
+      if (columnInfo.length === 0) {
+        console.log('Adding isDeleted column to Campaigns table...');
+        await conn.query('ALTER TABLE Campaigns ADD COLUMN isDeleted TINYINT(1) DEFAULT 0');
+        console.log('isDeleted column added successfully.');
+      }
+    } catch (err) {
+      if (err.code !== 'ER_BAD_FIELD_ERROR' && err.code !== 'ER_DUP_FIELDNAME') {
+        console.log('Note: isDeleted column migration skipped:', err.message);
       }
     }
 

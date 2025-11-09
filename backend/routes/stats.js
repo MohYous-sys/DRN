@@ -47,8 +47,8 @@ router.get('/', async (req, res) => {
     );
     const donors = Number(donorsResult[0].donors) || 0;
     
-    // Get number of active campaigns
-    const campaignsResult = await conn.query('SELECT COUNT(*) as campaigns FROM Campaigns');
+    // Get number of active campaigns (non-deleted)
+    const campaignsResult = await conn.query('SELECT COUNT(*) as campaigns FROM Campaigns WHERE isDeleted = 0 OR isDeleted IS NULL');
     const activeCampaigns = Number(campaignsResult[0].campaigns) || 0;
     
     res.json({

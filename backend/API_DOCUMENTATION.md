@@ -9,7 +9,7 @@
 ## Campaigns API (`/api/campaigns`)
 
 ### `GET /` - Get All Campaigns
-Returns all campaigns with current fundraising amounts and number of donators.
+Returns all active (non-deleted) campaigns with current fundraising amounts and number of donators. Deleted campaigns are excluded from this list.
 
 **Response**: `200 OK`
 ```json
@@ -64,10 +64,12 @@ Updates campaign details. `CurrentAmount` cannot be modified (auto-managed by do
 **Errors**: `403 Forbidden` | `404 Not Found` | `401 Unauthorized`
 
 ### `DELETE /:id` - Delete Campaign (Admin Only)
-Deletes a campaign and all associated donations (cascade).
+Soft deletes a campaign by marking it as deleted. The campaign and its donations remain in the database but are hidden from normal queries. **Stats, top donators, and donation history remain unchanged.**
 
 **Response**: `200 OK` - `{ "message": "Campaign deleted successfully." }`  
 **Errors**: `403 Forbidden` | `404 Not Found` | `401 Unauthorized`
+
+**Note**: This is a soft delete operation. The campaign is marked as deleted but not removed from the database, preserving all donation history and statistics.
 
 ---
 
@@ -176,7 +178,7 @@ Creates a donation and automatically increments the campaign's `CurrentAmount`. 
 **Errors**:
 - `400 Bad Request` - Invalid amount (≤0) or missing CampaignID
 - `401 Unauthorized` - Not logged in
-- `404 Not Found` - Campaign doesn't exist
+- `404 Not Found` - Campaign doesn't exist or has been deleted (deleted campaigns cannot receive new donations)
 - `500 Internal Server Error` - Database/transaction error
 
 ### `GET /top-donators` - Get Top Donators
