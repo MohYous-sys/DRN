@@ -28,8 +28,14 @@ const createCampaignsTable = `
     Description TEXT,
     Image VARCHAR(255),
     Goal DECIMAL(15, 2) NOT NULL,
+    CurrentAmount DECIMAL(15, 2) DEFAULT 0.00,
     Due DATE
   );
+`;
+
+const addCurrentAmountColumn = `
+  ALTER TABLE Campaigns 
+  ADD COLUMN IF NOT EXISTS CurrentAmount DECIMAL(15, 2) DEFAULT 0.00;
 `;
 
 const dropForeignKey = `
@@ -76,6 +82,32 @@ async function setupDatabase() {
       // Column might not exist yet or already be JSON type, ignore error
       if (err.code !== 'ER_BAD_FIELD_ERROR' && err.code !== 'ER_INVALID_USE_OF_NULL') {
         console.log('Note: Supplies column migration skipped:', err.message);
+      }
+    }
+
+    // Add CurrentAmount column to existing Campaigns table if it doesn't exist
+    try {
+      const columnInfo = await conn.query('SHOW COLUMNS FROM Campaigns WHERE Field = ?', ['CurrentAmount']);
+      if (columnInfo.length === 0) {
+        console.log('Adding CurrentAmount column to Campaigns table...');
+        await conn.query('ALTER TABLE Campaigns ADD COLUMN CurrentAmount DECIMAL(15, 2) DEFAULT 0.00');
+        console.log('CurrentAmount column added successfully.');
+        
+        // Initialize CurrentAmount for existing campaigns by summing donations
+        console.log('Initializing CurrentAmount for existing campaigns...');
+        await conn.query(`
+          UPDATE Campaigns c
+          SET c.CurrentAmount = COALESCE((
+            SELECT SUM(d.Amount)
+            FROM Donations d
+            WHERE d.CampaignID = c.ID
+          ), 0.00)
+        `);
+        console.log('CurrentAmount initialized for existing campaigns.');
+      }
+    } catch (err) {
+      if (err.code !== 'ER_BAD_FIELD_ERROR' && err.code !== 'ER_DUP_FIELDNAME') {
+        console.log('Note: CurrentAmount column migration skipped:', err.message);
       }
     }
 

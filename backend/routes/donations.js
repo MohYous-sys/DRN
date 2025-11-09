@@ -8,7 +8,15 @@ router.get('/', async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
-    const rows = await conn.query('SELECT * FROM Donations');
+    // Join with Users table to get donor username
+    const rows = await conn.query(`
+      SELECT 
+        d.*,
+        u.Username as DonorUsername
+      FROM Donations d
+      LEFT JOIN Users u ON d.Donor = u.ID
+      ORDER BY d.ID DESC
+    `);
     // Parse Supplies from JSON to array
     const donations = rows.map(donation => {
       let supplies = [];
@@ -26,7 +34,9 @@ router.get('/', async (req, res) => {
       }
       return {
         ...donation,
-        Supplies: supplies
+        Supplies: supplies,
+        // Include both Donor (ID) and DonorUsername for backward compatibility
+        DonorUsername: donation.DonorUsername || 'Anonymous'
       };
     });
     res.json(donations);
@@ -70,17 +80,35 @@ router.post('/', login_required, async (req, res) => {
       return res.status(404).json({ error: 'Campaign not found.' });
     }
     
-    // Store Supplies as JSON array
-    const result = await conn.query('INSERT INTO Donations (Amount, Supplies, Donor, CampaignID) VALUES (?, ?, ?, ?)', 
-      [Amount, JSON.stringify(suppliesArray), Donor, CampaignID]);
+    // Start a transaction to ensure both donation and campaign update succeed or fail together
+    await conn.beginTransaction();
     
-    res.status(201).json({ 
-      id: Number(result.insertId), 
-      Amount, 
-      Supplies: suppliesArray, 
-      Donor, 
-      CampaignID 
-    });
+    try {
+      // Store Supplies as JSON array
+      const result = await conn.query('INSERT INTO Donations (Amount, Supplies, Donor, CampaignID) VALUES (?, ?, ?, ?)', 
+        [Amount, JSON.stringify(suppliesArray), Donor, CampaignID]);
+      
+      // Update the campaign's CurrentAmount by adding the donation amount
+      await conn.query(
+        'UPDATE Campaigns SET CurrentAmount = COALESCE(CurrentAmount, 0) + ? WHERE ID = ?',
+        [Amount, CampaignID]
+      );
+      
+      // Commit the transaction
+      await conn.commit();
+      
+      res.status(201).json({ 
+        id: Number(result.insertId), 
+        Amount, 
+        Supplies: suppliesArray, 
+        Donor, 
+        CampaignID 
+      });
+    } catch (err) {
+      // Rollback the transaction on error
+      await conn.rollback();
+      throw err;
+    }
   } catch (err) {
     res.status(500).json({ error: err.message });
   } finally {

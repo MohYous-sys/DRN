@@ -23,8 +23,13 @@ router.post('/', login_required, async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
-    const result = await conn.query('INSERT INTO Campaigns (Title, Location, Urgency, Description, Image, Goal, Due) VALUES (?, ?, ?, ?, ?, ?, ?)', [Title, Location, Urgency, Description, Image, Goal, Due]);
-    res.status(201).json({ id: Number(result.insertId), ...req.body });
+    // CurrentAmount defaults to 0.00 for new campaigns
+    const result = await conn.query('INSERT INTO Campaigns (Title, Location, Urgency, Description, Image, Goal, CurrentAmount, Due) VALUES (?, ?, ?, ?, ?, ?, 0.00, ?)', [Title, Location, Urgency, Description, Image, Goal, Due]);
+    res.status(201).json({ 
+      id: Number(result.insertId), 
+      ...req.body,
+      CurrentAmount: 0.00
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   } finally {
@@ -39,6 +44,7 @@ router.post('/:id', admin_required, async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
+    // Note: CurrentAmount is not updated here - it's automatically managed by donations
     const result = await conn.query(
       'UPDATE Campaigns SET Title = ?, Location = ?, Urgency = ?, Description = ?, Image = ?, Goal = ?, Due = ? WHERE ID = ?',
       [Title, Location, Urgency, Description, Image, Goal, Due, id]
