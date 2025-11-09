@@ -33,8 +33,13 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   const [showDonationModal, setShowDonationModal] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { user } = useAuth();
-  const percentage = Math.round((raised / goal) * 100);
-  const goalRemaining = goal - raised;
+  // normalize numeric inputs
+  const safeRaised = Number(raised || 0);
+  const safeGoal = Number(goal || 0);
+  const safeSupporters = Number(supporters || 0);
+  // percent (clamped to 100) and remaining amount
+  const percentage = safeGoal > 0 ? Math.round(Math.min(1, safeRaised / safeGoal) * 100) : 100;
+  const goalRemaining = Math.max(0, safeGoal - safeRaised);
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-100 max-w-sm">
@@ -65,10 +70,10 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           **Latest Update:** {update}
         </p>
 
-        <div className="mb-1" role="progressbar" aria-valuenow={raised} aria-valuemin={0} aria-valuemax={goal}>
+        <div className="mb-1" role="progressbar" aria-valuenow={safeRaised} aria-valuemin={0} aria-valuemax={safeGoal}>
           <div className="flex justify-between items-center text-sm font-semibold">
-            <span className="text-gray-800">${raised.toLocaleString()}</span>
-            <span className="text-gray-500">of ${goal.toLocaleString()}</span>
+            <span className="text-gray-800">${safeRaised.toLocaleString()}</span>
+            <span className="text-gray-500">of ${safeGoal.toLocaleString()}</span>
           </div>
           <div className="w-full bg-gray-200 rounded-full h-2.5">
             <div
@@ -79,8 +84,12 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
         </div>
 
         <div className="flex justify-between text-xs text-gray-500 mb-6">
-          <span>**{supporters.toLocaleString()}** supporters</span>
-          <span>${goalRemaining.toLocaleString()} to go</span>
+          <span className="font-semibold">{safeSupporters.toLocaleString()} supporters</span>
+          {goalRemaining <= 0 ? (
+            <span className="text-green-600 font-bold">Done!</span>
+          ) : (
+            <span>${goalRemaining.toLocaleString()} to go</span>
+          )}
         </div>
 
         <button 

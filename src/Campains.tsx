@@ -12,6 +12,7 @@ type CampaignRow = {
   CurrentAmount?: number;
   Due?: string;
   Urgency?: string;
+  numberOfDonators?: number;
 };
 
 
@@ -70,16 +71,18 @@ function CampaignsComponent() {
         <section className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
           {campaigns.map((row, index) => {
             const campaignProps = {
-              title: row.Title || 'Untitled Campaign',
-              location: row.Location || 'Unknown',
-              description: row.Description || '',
-              update: row.Urgency || 'No updates',
-              raised: Number(row.CurrentAmount || 0), // Use CurrentAmount from database
-              goal: Number(row.Goal || 0),
-              supporters: 0, 
-              time: row.Due || 'N/A',
-              isCritical: (row.Urgency || '').toLowerCase() === 'critical',
-              imageSrc: row.Image || ''
+                title: row.Title || 'Untitled Campaign',
+                location: row.Location || 'Unknown',
+                description: row.Description || '',
+                update: row.Urgency || 'No updates',
+                // Use CurrentAmount from backend if available
+                raised: Number(row.CurrentAmount || 0),
+                goal: Number(row.Goal || 0),
+                // Backend returns numberOfDonators in campaigns route
+                supporters: Number((row as any).numberOfDonators || 0),
+                time: row.Due || 'N/A',
+                isCritical: (row.Urgency || '').toLowerCase() === 'critical',
+                imageSrc: row.Image || ''
             };
             return <CampaignCard key={row.ID ?? index} {...campaignProps} campaignId={row.ID} />;
           })}
