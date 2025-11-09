@@ -116,4 +116,34 @@ router.post('/', login_required, async (req, res) => {
   }
 });
 
+// Get top donators
+router.get('/top-donators', async (req, res) => {
+  let conn;
+  try {
+    conn = await pool.getConnection();
+    // Get users with their total donation amounts, ordered by total descending
+    const rows = await conn.query(`
+      SELECT 
+        u.Username as donatorName,
+        COALESCE(SUM(d.Amount), 0) as totalAmount
+      FROM Users u
+      INNER JOIN Donations d ON u.ID = d.Donor
+      GROUP BY u.ID, u.Username
+      ORDER BY totalAmount DESC
+    `);
+    
+    // Format the response
+    const topDonators = rows.map(row => ({
+      donatorName: row.donatorName,
+      totalAmount: Number(row.totalAmount) || 0
+    }));
+    
+    res.json(topDonators);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  } finally {
+    if (conn) conn.release();
+  }
+});
+
 module.exports = router;

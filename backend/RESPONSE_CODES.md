@@ -4,7 +4,7 @@
 
 | Code | Status | Meaning | When Used | Example Response |
 |------|--------|---------|-----------|------------------|
-| **200** | OK | Request succeeded | GET requests, login, logout, updates, deletions | `{ "loggedIn": true, "user": {...} }` |
+| **200** | OK | Request succeeded | GET requests (campaigns, donations, stats, top-donators), login, logout, updates, deletions | `{ "loggedIn": true, "user": {...} }` |
 | **201** | Created | Resource created successfully | User registration, campaign/donation creation | `{ "id": 1, "Username": "user123" }` |
 | **400** | Bad Request | Invalid request data | Missing/invalid required fields | `{ "error": "Amount is required and must be greater than 0." }` |
 | **401** | Unauthorized | Authentication required/failed | Missing session, invalid credentials | `{ "error": "Authentication required. Please log in." }` |

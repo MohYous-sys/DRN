@@ -177,6 +177,38 @@ Creates a donation and automatically increments the campaign's `CurrentAmount`. 
 - `404 Not Found` - Campaign doesn't exist
 - `500 Internal Server Error` - Database/transaction error
 
+### `GET /top-donators` - Get Top Donators
+Returns a list of donators with their total donation amounts, ordered by total amount (highest first). Only includes users who have made at least one donation.
+
+**Response**: `200 OK`
+```json
+[
+  {
+    "donatorName": "john_doe",
+    "totalAmount": 5000.00
+  },
+  {
+    "donatorName": "jane_smith",
+    "totalAmount": 3500.00
+  },
+  {
+    "donatorName": "testuser",
+    "totalAmount": 1200.00
+  }
+]
+```
+
+**Fields**:
+- `donatorName` (string): Username of the donor
+- `totalAmount` (number): Sum of all donation amounts made by this donor
+
+**Notes**:
+- Only users who have made at least one donation are included
+- Results are ordered by `totalAmount` in descending order (highest first)
+- Returns empty array `[]` if no donations exist
+
+**Errors**: `500 Internal Server Error`
+
 ---
 
 ## Stats API (`/api/stats`)
