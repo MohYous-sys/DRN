@@ -9,7 +9,7 @@
 | **400** | Bad Request | Invalid request data | Missing/invalid required fields | `{ "error": "Amount is required and must be greater than 0." }` |
 | **401** | Unauthorized | Authentication required/failed | Missing session, invalid credentials | `{ "error": "Authentication required. Please log in." }` |
 | **403** | Forbidden | Access denied | Admin-only endpoints, reserved username | `{ "error": "Forbidden. Administrator access required." }` |
-| **404** | Not Found | Resource not found | Invalid campaign/donation ID | `{ "error": "Campaign not found." }` |
+| **404** | Not Found | Resource not found | Invalid campaign/donation ID, or campaign has been deleted | `{ "error": "Campaign not found." }` or `{ "error": "Campaign not found or has been deleted." }` |
 | **409** | Conflict | Duplicate entry | Username already exists | `{ "error": "Username already exists." }` |
 | **500** | Internal Server Error | Server/database error | Connection failures, query errors, transaction failures | `{ "error": "Error message" }` |
 
@@ -30,7 +30,7 @@ All errors return: `{ "error": "Error message description" }`
 
 ### Admin Required
 - `POST /api/campaigns/:id` - Update campaign
-- `DELETE /api/campaigns/:id` - Delete campaign
+- `DELETE /api/campaigns/:id` - Delete campaign (soft delete - preserves donations and stats)
 
 ### Session-Based Auth
 All authenticated endpoints use cookie-based sessions. Include `credentials: 'include'` in fetch requests to send session cookies.
@@ -39,6 +39,6 @@ All authenticated endpoints use cookie-based sessions. Include `credentials: 'in
 
 - **401 Unauthorized**: User not logged in or session expired
 - **403 Forbidden**: User lacks admin privileges for admin-only operations
-- **404 Not Found**: Campaign/Donation ID doesn't exist in database
+- **404 Not Found**: Campaign/Donation ID doesn't exist in database, or campaign has been soft-deleted (deleted campaigns cannot be updated or receive new donations)
 - **409 Conflict**: Attempting to register with existing username
 - **500 Internal Server Error**: Database connection issues, SQL errors, or transaction failures

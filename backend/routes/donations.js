@@ -74,10 +74,10 @@ router.post('/', login_required, async (req, res) => {
   try {
     conn = await pool.getConnection();
     
-    // Verify that the campaign exists
-    const campaignCheck = await conn.query('SELECT ID FROM Campaigns WHERE ID = ?', [CampaignID]);
+    // Verify that the campaign exists and is not deleted
+    const campaignCheck = await conn.query('SELECT ID FROM Campaigns WHERE ID = ? AND (isDeleted = 0 OR isDeleted IS NULL)', [CampaignID]);
     if (campaignCheck.length === 0) {
-      return res.status(404).json({ error: 'Campaign not found.' });
+      return res.status(404).json({ error: 'Campaign not found or has been deleted.' });
     }
     
     // Start a transaction to ensure both donation and campaign update succeed or fail together
