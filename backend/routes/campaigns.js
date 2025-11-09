@@ -8,8 +8,24 @@ router.get('/', async (req, res) => {
   let conn;
   try {
     conn = await pool.getConnection();
-    const rows = await conn.query('SELECT * FROM Campaigns');
-    res.json(rows);
+    // Get campaigns with count of unique donators
+    const rows = await conn.query(`
+      SELECT 
+        c.*,
+        COALESCE(COUNT(DISTINCT d.Donor), 0) as numberOfDonators
+      FROM Campaigns c
+      LEFT JOIN Donations d ON c.ID = d.CampaignID
+      GROUP BY c.ID
+      ORDER BY c.ID
+    `);
+    
+    // Format the response - convert numberOfDonators to number
+    const campaigns = rows.map(campaign => ({
+      ...campaign,
+      numberOfDonators: Number(campaign.numberOfDonators) || 0
+    }));
+    
+    res.json(campaigns);
   } catch (err) {
     res.status(500).json({ error: err.message });
   } finally {

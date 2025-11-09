@@ -9,7 +9,7 @@
 ## Campaigns API (`/api/campaigns`)
 
 ### `GET /` - Get All Campaigns
-Returns all campaigns with current fundraising amounts.
+Returns all campaigns with current fundraising amounts and number of donators.
 
 **Response**: `200 OK`
 ```json
@@ -23,7 +23,8 @@ Returns all campaigns with current fundraising amounts.
     "Image": "https://example.com/image.jpg",
     "Goal": 100000.00,
     "CurrentAmount": 45000.00,
-    "Due": "2025-12-31"
+    "Due": "2025-12-31",
+    "numberOfDonators": 15
   }
 ]
 ```
@@ -34,6 +35,7 @@ Returns all campaigns with current fundraising amounts.
 - `Goal` (number): Fundraising target
 - `CurrentAmount` (number): Amount raised (auto-updated from donations)
 - `Due` (string): Deadline date (YYYY-MM-DD)
+- `numberOfDonators` (number): Count of unique users who have donated to this campaign
 
 ### `POST /` - Create Campaign (Auth Required)
 Creates a new campaign. `CurrentAmount` starts at 0.00.
