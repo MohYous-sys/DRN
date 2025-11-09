@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DollarSign, AlertTriangle, Users, MessageSquare, ArrowUp } from 'lucide-react';
 import api from './api/adminApi';
+import { useAuth } from './auth/AuthContext';
 
 interface StatsCardProps {
   title: string;
@@ -69,7 +70,31 @@ const TabsNavigation = ({ activeTab, tabs, onTabClick }: TabsNavigationProps) =>
 
 
 const AdminPanelComponent = () => {
+  const { user } = useAuth();
   const [activeTab, setActiveTab] = useState('Overview');
+  
+  // If not logged in as admin, don't render anything
+  if (!user?.isAdmin) {
+    return null;
+  }
+  
+  // Hide other content when in admin panel
+  useEffect(() => {
+    const nonAdminContent = document.querySelectorAll('header, #main-section, #campaigns, #trust-section, #testimonials, #live-updates');
+    nonAdminContent.forEach(el => {
+      if (el && el instanceof HTMLElement) {
+        el.style.display = 'none';
+      }
+    });
+    
+    return () => {
+      nonAdminContent.forEach(el => {
+        if (el && el instanceof HTMLElement) {
+          el.style.display = '';
+        }
+      });
+    };
+  }, []);
 
   // Live data from backend
   const [statsData, setStatsData] = useState<null | { totalDonations: number; activeCampaigns: number; donors: number; numberOfSupplies: number }>(null);

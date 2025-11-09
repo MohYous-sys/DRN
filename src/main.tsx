@@ -13,6 +13,7 @@ import { AuthProvider } from './auth/AuthContext';
 createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
+      <AdminPanel />  
       <Header />
       <div className="h-10" />
       <MainSection />
@@ -20,7 +21,6 @@ createRoot(document.getElementById('root')!).render(
       <TrustSection />
       <TestimonialsSection />
       <LiveUpdatesSection />
-      <AdminPanel />
     </AuthProvider>
   </React.StrictMode>
 )
