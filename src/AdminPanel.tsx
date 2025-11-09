@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
-import { DollarSign, AlertTriangle, Users, MessageSquare, Briefcase, Database, Lock, Activity, ArrowUp, Zap, Clock } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { DollarSign, AlertTriangle, Users, MessageSquare, ArrowUp } from 'lucide-react';
+import api from './api/adminApi';
 
 interface StatsCardProps {
   title: string;
@@ -68,30 +69,60 @@ const TabsNavigation = ({ activeTab, tabs, onTabClick }: TabsNavigationProps) =>
 
 
 const AdminPanelComponent = () => {
-  const [activeTab, setActiveTab] = useState('Overview'); 
+  const [activeTab, setActiveTab] = useState('Overview');
 
-  const stats = [
-    { title: 'Total Donations', value: '$1,750', detail: '+12% from last month', icon: DollarSign, valueColor: 'text-black' },
-    { title: 'Active Disasters', value: '2', detail: '3 total events', icon: AlertTriangle, valueColor: 'text-orange-700' },
-    { title: 'Registered Users', value: '3', detail: '+3 this week', icon: Users, valueColor: 'text-black' },
-    { title: 'Pending Feedback', value: '1', detail: 'Requires attention', icon: MessageSquare, valueColor: 'text-red-700' },
-  ];
+  // Live data from backend
+  const [statsData, setStatsData] = useState<null | { totalDonations: number; activeCampaigns: number; donors: number; numberOfSupplies: number }>(null);
+  const [campaigns, setCampaigns] = useState<any[] | null>(null);
+  const [donations, setDonations] = useState<any[] | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const tabs = ['Disasters', 'Campaigns', 'Donations', 'Needs', 'Users', 'Feedback'];
 
-  const recentActivity = [
-    { text: 'New donation of $500 received', time: '2 min ago', icon: DollarSign, iconClass: 'text-white bg-red-600' },
-    { text: 'New disaster event created', time: '15 min ago', icon: AlertTriangle, iconClass: 'text-white bg-orange-600' },
-    { text: 'New user registered', time: '1 hour ago', icon: Users, iconClass: 'text-white bg-gray-700' },
-    { text: 'New feedback submitted', time: '2 hours ago', icon: MessageSquare, iconClass: 'text-white bg-red-700' },
-  ];
+  // Build displayable stats used by the UI (falls back to placeholders)
+  const summaryStats = statsData
+    ? [
+        { title: 'Total Donations', value: `$${statsData.totalDonations}`, detail: `${statsData.numberOfSupplies} supplies`, icon: DollarSign, valueColor: 'text-black' },
+        { title: 'Active Disasters', value: `${statsData.activeCampaigns}`, detail: `${statsData.activeCampaigns} total events`, icon: AlertTriangle, valueColor: 'text-orange-700' },
+        { title: 'Registered Users', value: `${statsData.donors}`, detail: `donors`, icon: Users, valueColor: 'text-black' },
+        { title: 'Pending Feedback', value: '—', detail: 'Requires attention', icon: MessageSquare, valueColor: 'text-red-700' },
+      ]
+    : [
+        { title: 'Total Donations', value: '$0', detail: '—', icon: DollarSign, valueColor: 'text-black' },
+        { title: 'Active Disasters', value: '0', detail: '—', icon: AlertTriangle, valueColor: 'text-orange-700' },
+        { title: 'Registered Users', value: '0', detail: '—', icon: Users, valueColor: 'text-black' },
+        { title: 'Pending Feedback', value: '0', detail: '—', icon: MessageSquare, valueColor: 'text-red-700' },
+      ];
 
-  const systemStatus = [
-    { metric: 'API Status', status: 'Operational', icon: Zap, statusColor: 'text-white bg-red-600', dot: 'bg-red-500' },
-    { metric: 'Database', status: 'Healthy', icon: Database, statusColor: 'text-white bg-red-600', dot: 'bg-red-500' },
-    { metric: 'Security', status: 'Secure', icon: Lock, statusColor: 'text-white bg-gray-700', dot: 'bg-gray-700' },
-    { metric: 'Active Users', status: '247', icon: Activity, statusColor: 'text-white bg-gray-400', dot: 'bg-gray-400' },
-  ];
+  useEffect(() => {
+    // Fetch key datasets for the overview when the panel mounts
+    let mounted = true;
+    setLoading(true);
+    setError(null);
+
+    Promise.all([api.getStats(), api.getCampaigns(), api.getDonations()])
+      .then(([s, c, d]) => {
+        if (!mounted) return;
+        setStatsData({
+          totalDonations: s.totalDonations ?? 0,
+          activeCampaigns: s.activeCampaigns ?? 0,
+          donors: s.donors ?? 0,
+          numberOfSupplies: s.numberOfSupplies ?? 0,
+        });
+        setCampaigns(c || []);
+        setDonations(d || []);
+      })
+      .catch(err => {
+        if (!mounted) return;
+        setError(err.message || 'Failed to load admin data');
+      })
+      .finally(() => {
+        if (mounted) setLoading(false);
+      });
+
+    return () => { mounted = false; };
+  }, []);
   
   const renderTabContent = () => {
     switch (activeTab) {
@@ -104,16 +135,47 @@ const AdminPanelComponent = () => {
         );
       case 'Campaigns':
         return (
-          <div className="mt-6 p-12 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
+          <div className="mt-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
             <h2 className="text-2xl font-bold text-purple-600 mb-4">Campaigns & Outreach</h2>
-            <p className="text-gray-600">Here you can manage fundraising campaigns, track their progress against goals, and initiate new public awareness initiatives. Key metrics like participation rate and total funds raised per campaign will be displayed.</p>
+            {loading && <p className="text-gray-500">Loading campaigns...</p>}
+            {error && <p className="text-red-600">{error}</p>}
+            {campaigns && (
+              <div className="space-y-3">
+                {campaigns.map(c => (
+                  <div key={c.ID} className="p-4 border rounded-md">
+                    <div className="flex justify-between items-start">
+                      <h3 className="text-lg font-semibold">{c.Title}</h3>
+                      <span className="text-sm text-gray-500">Goal: ${c.Goal}</span>
+                    </div>
+                    <p className="text-sm text-gray-600">{c.Description}</p>
+                    <div className="text-xs text-gray-400 mt-2">Location: {c.Location} • Due: {c.Due}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {!loading && !campaigns && <p className="text-gray-500">No campaigns data available.</p>}
           </div>
         );
       case 'Donations':
         return (
-          <div className="mt-6 p-12 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
+          <div className="mt-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
             <h2 className="text-2xl font-bold text-green-600 mb-4">Donation Records & Analytics</h2>
-            <p className="text-gray-600">This panel provides a searchable table of all monetary and in-kind donations. You can filter by donor, amount, date, or target campaign, and generate financial reports here.</p>
+            {loading && <p className="text-gray-500">Loading donations...</p>}
+            {error && <p className="text-red-600">{error}</p>}
+            {donations && (
+              <div className="space-y-3">
+                {donations.map(d => (
+                  <div key={d.ID} className="p-3 border rounded-md flex justify-between">
+                    <div>
+                      <div className="font-medium">${d.Amount}</div>
+                      <div className="text-sm text-gray-500">Donor ID: {d.Donor} • Campaign ID: {d.CampaignID}</div>
+                    </div>
+                    <div className="text-sm text-gray-600">Supplies: {(d.Supplies || []).join(', ')}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            {!loading && !donations && <p className="text-gray-500">No donations data available.</p>}
           </div>
         );
       case 'Needs':
@@ -125,9 +187,24 @@ const AdminPanelComponent = () => {
         );
       case 'Users':
         return (
-          <div className="mt-6 p-12 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
+          <div className="mt-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
             <h2 className="text-2xl font-bold text-blue-600 mb-4">User Account Management</h2>
-            <p className="text-gray-600">Access and modify registered user and volunteer accounts. Tools for authentication resets, role assignments, and activity logging are available in this view.</p>
+            <p className="text-gray-600">The backend currently exposes session status but not a public "list users" endpoint. You can use the session status to confirm admin login.</p>
+            {/* Try session status */}
+            <button
+              onClick={async () => {
+                setLoading(true); setError(null);
+                try {
+                  const s = await api.getSessionStatus();
+                  alert(JSON.stringify(s));
+                } catch (err: any) {
+                  setError(err.message || 'Failed to fetch session');
+                } finally { setLoading(false); }
+              }}
+              className="mt-3 px-4 py-2 bg-red-600 text-white rounded"
+            >
+              Check Session Status
+            </button>
           </div>
         );
       case 'Feedback':
@@ -150,7 +227,7 @@ const AdminPanelComponent = () => {
   return (
   <div className="min-h-screen bg-gray-50 font-sans antialiased p-4 sm:p-6 lg:p-8">
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
-        {stats.map(stat => (
+        {summaryStats.map((stat: any) => (
           <StatsCard key={stat.title} {...stat} />
         ))}
       </div>

@@ -34,11 +34,9 @@ const getBadgeClasses = (badgeType: BadgeType | null = null, variant: BadgeVaria
     if (variant === "secondary") {
         return `${baseClasses} bg-gray-100 text-gray-700 hover:bg-gray-200`;
     }
-    
     if (badgeType === "sensor" || badgeType === "rescue") {
         return `${baseClasses} bg-red-600 text-white hover:bg-red-700`;
     }
-
     return `${baseClasses} bg-red-600 text-white hover:bg-red-700`;
 };
 

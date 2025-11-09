@@ -12,6 +12,7 @@ interface CampaignCardProps {
   time: string;
   isCritical: boolean;
   imageSrc: string;
+  campaignId?: number;
 }
 
 const CampaignCard: React.FC<CampaignCardProps> = ({ 
@@ -24,7 +25,8 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
   supporters, 
   time, 
   isCritical, 
-  imageSrc 
+  imageSrc,
+  campaignId
 }) => {
   const [showDonationModal, setShowDonationModal] = useState(false);
   const percentage = Math.round((raised / goal) * 100);
@@ -88,7 +90,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
           </span>
         </button>
       </div>
-      {showDonationModal && <DonationModal onClose={() => setShowDonationModal(false)} />}
+      {showDonationModal && <DonationModal campaignId={campaignId} onClose={() => setShowDonationModal(false)} />}
     </div>
   );
 };

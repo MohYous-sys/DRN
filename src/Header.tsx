@@ -1,9 +1,19 @@
 import { Activity } from "lucide-react";
+import { useState } from "react";
+import AuthModule from "./components/authmodule.tsx";
+import { useAuth } from './auth/AuthContext';
 
-const Header = () => {  
+const AuthModuleAny: any = AuthModule;
+
+const Header = () => {
+  const [isAuthOpen, setAuthOpen] = useState(false);
+  const openAuth = () => setAuthOpen(true);
+  const closeAuth = () => setAuthOpen(false);
+  const { user, logout } = useAuth();
   const ghostIconButtonClasses = "inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors h-10 w-10 p-0 hover:bg-gray-100/50";
   
   return (
+    <>
     <header className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-20">
         <div className="flex items-center justify-between h-16">
@@ -22,9 +32,16 @@ const Header = () => {
             <button className="bg-black text-white font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-800 transition">
               Donate Now
             </button>
-            <a href="#login" className="text-sm font-medium text-foreground hover:text-emergency transition-colors">
-              Login
-            </a>
+            {user ? (
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium text-foreground">{user.username}</span>
+                <button onClick={async () => { await logout(); }} className="text-sm font-medium text-red-600 hover:text-red-700 transition-colors">Logout</button>
+              </div>
+            ) : (
+              <button onClick={openAuth} className="text-sm font-medium text-foreground hover:text-emergency transition-colors">
+                Login
+              </button>
+            )}
           </nav>
 
           <button className={`md:hidden ${ghostIconButtonClasses}`}>
@@ -35,6 +52,8 @@ const Header = () => {
         </div>
       </div>
     </header>
+    {isAuthOpen && <AuthModuleAny onClose={closeAuth} />}
+    </>
   );
 };
 
