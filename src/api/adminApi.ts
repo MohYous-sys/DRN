@@ -30,6 +30,34 @@ export async function getDonations(): Promise<any[]> {
   return handleRes(res);
 }
 
+export async function createCampaign(payload: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/api/campaigns`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleRes(res);
+}
+
+export async function updateCampaign(id: number | string, payload: any): Promise<any> {
+  const res = await fetch(`${API_BASE}/api/campaigns/${id}`, {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  });
+  return handleRes(res);
+}
+
+export async function deleteCampaign(id: number | string): Promise<any> {
+  const res = await fetch(`${API_BASE}/api/campaigns/${id}`, {
+    method: 'DELETE',
+    credentials: 'include',
+  });
+  return handleRes(res);
+}
+
 // Session status (useful for admin-only actions). Returns { loggedIn: boolean, user?: { id, username, isAdmin } }
 export async function getSessionStatus(): Promise<any> {
   const res = await fetch(`${API_BASE}/api/users/status`, { credentials: 'include' });
@@ -41,4 +69,7 @@ export default {
   getCampaigns,
   getDonations,
   getSessionStatus,
+  createCampaign,
+  updateCampaign,
+  deleteCampaign,
 };

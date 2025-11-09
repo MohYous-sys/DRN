@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { DollarSign, AlertTriangle, Users, MessageSquare, ArrowUp } from 'lucide-react';
 import api from './api/adminApi';
 import { useAuth } from './auth/AuthContext';
+import CampaignModal from './components/CampaignModal';
 
 interface StatsCardProps {
   title: string;
@@ -79,6 +80,7 @@ const AdminPanelComponent = () => {
   const [donations, setDonations] = useState<any[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [editingCampaign, setEditingCampaign] = useState<any | null>(null);
 
   const tabs = ['Disasters', 'Campaigns', 'Donations', 'Needs', 'Users', 'Feedback'];
 
@@ -97,33 +99,30 @@ const AdminPanelComponent = () => {
         { title: 'Pending Feedback', value: '0', detail: '—', icon: MessageSquare, valueColor: 'text-red-700' },
       ];
 
-  useEffect(() => {
-    // Fetch key datasets for the overview when the panel mounts
-    let mounted = true;
+  // Refresh all admin datasets
+  const refreshData = async () => {
     setLoading(true);
     setError(null);
-
-    Promise.all([api.getStats(), api.getCampaigns(), api.getDonations()])
-      .then(([s, c, d]) => {
-        if (!mounted) return;
-        setStatsData({
-          totalDonations: s.totalDonations ?? 0,
-          activeCampaigns: s.activeCampaigns ?? 0,
-          donors: s.donors ?? 0,
-          numberOfSupplies: s.numberOfSupplies ?? 0,
-        });
-        setCampaigns(c || []);
-        setDonations(d || []);
-      })
-      .catch(err => {
-        if (!mounted) return;
-        setError(err.message || 'Failed to load admin data');
-      })
-      .finally(() => {
-        if (mounted) setLoading(false);
+    try {
+      const [s, c, d] = await Promise.all([api.getStats(), api.getCampaigns(), api.getDonations()]);
+      setStatsData({
+        totalDonations: s.totalDonations ?? 0,
+        activeCampaigns: s.activeCampaigns ?? 0,
+        donors: s.donors ?? 0,
+        numberOfSupplies: s.numberOfSupplies ?? 0,
       });
+      setCampaigns(c || []);
+      setDonations(d || []);
+    } catch (err: any) {
+      setError(err.message || 'Failed to load admin data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return () => { mounted = false; };
+  useEffect(() => {
+    // initial load
+    refreshData();
   }, []);
   
   const renderTabContent = () => {
@@ -131,19 +130,63 @@ const AdminPanelComponent = () => {
       case 'Campaigns':
         return (
           <div className="mt-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
-            <h2 className="text-2xl font-bold text-purple-600 mb-4">Campaigns & Outreach</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-2xl font-bold text-purple-600">Campaigns & Outreach</h2>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setEditingCampaign({ Title: '', Location: '', Description: '', Image: '', Goal: 0, Urgency: '', Due: '' })}
+                  className="px-3 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition"
+                >
+                  New Campaign
+                </button>
+              </div>
+            </div>
+
             {loading && <p className="text-gray-500">Loading campaigns...</p>}
             {error && <p className="text-red-600">{error}</p>}
+
+            {/* Campaign modal for create/edit */}
+            {editingCampaign && (
+              <CampaignModal
+                campaign={editingCampaign}
+                onClose={() => setEditingCampaign(null)}
+                onSave={async (payload: any) => {
+                  setLoading(true); setError(null);
+                  try {
+                    if (payload.ID) {
+                      await api.updateCampaign(payload.ID, payload);
+                    } else {
+                      await api.createCampaign(payload);
+                    }
+                    await refreshData();
+                  } catch (err: any) {
+                    throw err;
+                  } finally { setLoading(false); }
+                }}
+              />
+            )}
+
             {campaigns && (
               <div className="space-y-3">
                 {campaigns.map(c => (
                   <div key={c.ID} className="p-4 border rounded-md">
                     <div className="flex justify-between items-start">
-                      <h3 className="text-lg font-semibold">{c.Title}</h3>
-                      <span className="text-sm text-gray-500">Goal: ${c.Goal}</span>
+                      <div>
+                        <h3 className="text-lg font-semibold">{c.Title}</h3>
+                        <p className="text-sm text-gray-600">{c.Description}</p>
+                        <div className="text-xs text-gray-400 mt-2">Location: {c.Location} • Due: {c.Due}</div>
+                      </div>
+                      <div className="flex flex-col items-end gap-2">
+                        <span className="text-sm text-gray-500">Goal: ${c.Goal}</span>
+                        <div className="flex gap-2">
+                          <button onClick={() => setEditingCampaign(c)} className="px-3 py-1 bg-yellow-500 text-white rounded-md">Edit</button>
+                          <button onClick={async () => {
+                            if (!confirm('Delete this campaign?')) return;
+                            try { setLoading(true); await api.deleteCampaign(c.ID); await refreshData(); } catch (err: any) { setError(err.message || 'Delete failed'); } finally { setLoading(false); }
+                          }} className="px-3 py-1 bg-red-600 text-white rounded-md">Delete</button>
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-sm text-gray-600">{c.Description}</p>
-                    <div className="text-xs text-gray-400 mt-2">Location: {c.Location} • Due: {c.Due}</div>
                   </div>
                 ))}
               </div>
