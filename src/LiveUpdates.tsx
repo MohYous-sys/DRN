@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { Radio, AlertCircle, Users, Trophy } from "lucide-react";
 
 type BadgeType = "sensor" | "rescue" | "placed" | string;
@@ -75,43 +76,48 @@ const LiveUpdatesSection = () => {
     },
   ];
 
-  const topContributors = [
-    {
-      name: "Emily Johnson",
-      amount: 15000,
-      events: 8,
-      badges: ["Top Donor", "Early Responder"],
-      rank: 1,
-    },
-    {
-      name: "Michael Chen",
-      amount: 12500,
-      events: 6,
-      badges: ["Flood Relief", "Consistent Supporter"],
-      rank: 2,
-    },
-    {
-      name: "Sarah Williams",
-      amount: 10200,
-      events: 9,
-      badges: ["Community Champion", "Monthly Donor"],
-      rank: 3,
-    },
-    {
-      name: "David Martinez",
-      amount: 8750,
-      events: 5,
-      badges: ["Hurricane Relief", "Tech Supporter"],
-      rank: 4,
-    },
-    {
-      name: "Lisa Anderson",
-      amount: 7200,
-      events: 7,
-      badges: ["Community Builder", "Quick Responder"],
-      rank: 5,
-    },
-  ];
+  const [topContributors, setTopContributors] = useState<Contributor[] | null>(null);
+  const [loadingTopContributors, setLoadingTopContributors] = useState(false);
+  const [topContributorsError, setTopContributorsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoadingTopContributors(true);
+      setTopContributorsError(null);
+      try {
+        const res = await fetch('/api/donations', { credentials: 'include' });
+        if (!res.ok) throw new Error(`Donations status ${res.status}`);
+        const donations = await res.json();
+
+        const map = new Map<string, { name: string; amount: number; events: number; badges: string[] }>();
+        (donations || []).forEach((d: any) => {
+          const name = d.DonorUsername || d.Donor || 'Anonymous';
+          const key = String(name);
+          const amt = Number(d.Amount || 0);
+          const existing = map.get(key) || { name: key, amount: 0, events: 0, badges: [] };
+          existing.amount += amt;
+          existing.events += 1;
+          map.set(key, existing);
+        });
+
+        const arr = Array.from(map.values())
+          .sort((a, b) => b.amount - a.amount)
+          .slice(0, 5)
+          .map((e, i) => ({ name: e.name, amount: e.amount, events: e.events, badges: e.badges, rank: i + 1 }));
+
+        if (mounted) setTopContributors(arr);
+      } catch (err: any) {
+        console.error('Failed to load top contributors', err);
+        if (mounted) setTopContributorsError(err.message || 'Failed to load top contributors');
+      } finally {
+        if (mounted) setLoadingTopContributors(false);
+      }
+    };
+
+    load();
+    return () => { mounted = false; };
+  }, []);
 
   return (
     <section className="py-16 px-4 bg-gray-50">
@@ -190,7 +196,9 @@ const LiveUpdatesSection = () => {
 
             <div className="p-5 border rounded-lg bg-white shadow-sm">
               <div className="space-y-4">
-                {topContributors.map((contributor, index) => (
+                {loadingTopContributors && <p className="text-sm text-gray-500">Loading top contributors...</p>}
+                {topContributorsError && <p className="text-sm text-red-500">Error: {topContributorsError}</p>}
+                {(!loadingTopContributors && !topContributorsError) && (topContributors || []).map((contributor, index) => (
                   <div
                     key={index}
                     className="flex items-start gap-3 pb-4 border-b border-gray-200 last:border-0 last:pb-0"

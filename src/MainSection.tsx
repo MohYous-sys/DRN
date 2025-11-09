@@ -20,7 +20,6 @@ export default function MainSection() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  // Function to load fresh stats from the server
   const loadStats = async (mounted = true) => {
     setLoading(true);
     setError(null);
@@ -48,13 +47,10 @@ export default function MainSection() {
     return () => { mounted = false; };
   }, []);
 
-  // Refresh stats from server when a donation is completed
   useEffect(() => {
     const handler = async (e: Event) => {
       try {
-        // Give the backend a moment to process the donation
         await new Promise(resolve => setTimeout(resolve, 500));
-        // Fetch fresh stats that include the new donation
         await loadStats(true);
       } catch (err) {
         console.warn('Failed to refresh stats after donation', err);

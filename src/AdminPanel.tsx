@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { DollarSign, AlertTriangle, Users, MessageSquare, ArrowUp } from 'lucide-react';
 import api from './api/adminApi';
+import { useAuth } from './auth/AuthContext';
 
 interface StatsCardProps {
   title: string;
@@ -69,6 +70,7 @@ const TabsNavigation = ({ activeTab, tabs, onTabClick }: TabsNavigationProps) =>
 
 
 const AdminPanelComponent = () => {
+  const { logout } = useAuth();
   const [activeTab, setActiveTab] = useState('Overview');
 
   // Live data from backend
@@ -126,13 +128,6 @@ const AdminPanelComponent = () => {
   
   const renderTabContent = () => {
     switch (activeTab) {
-      case 'Disasters':
-        return (
-          <div className="mt-6 p-12 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
-            <h2 className="text-2xl font-bold text-orange-600 mb-4">Disaster Management Panel</h2>
-            <p className="text-gray-600">This section will contain a list of all active and historical disaster events, including location, severity, and required resources. Use this area to quickly log a new event or view the live status of existing crises.</p>
-          </div>
-        );
       case 'Campaigns':
         return (
           <div className="mt-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
@@ -178,13 +173,6 @@ const AdminPanelComponent = () => {
             {!loading && !donations && <p className="text-gray-500">No donations data available.</p>}
           </div>
         );
-      case 'Needs':
-        return (
-          <div className="mt-6 p-12 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
-            <h2 className="text-2xl font-bold text-red-600 mb-4">Resource Needs Tracking</h2>
-            <p className="text-gray-600">Manage the real-time resource requirements (e.g., medical supplies, food, temporary shelter) for each active disaster event. This panel helps match incoming donations with immediate critical needs.</p>
-          </div>
-        );
       case 'Users':
         return (
           <div className="mt-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
@@ -207,13 +195,6 @@ const AdminPanelComponent = () => {
             </button>
           </div>
         );
-      case 'Feedback':
-        return (
-          <div className="mt-6 p-12 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
-            <h2 className="text-2xl font-bold text-pink-600 mb-4">User Feedback and Support Tickets</h2>
-            <p className="text-gray-600">Review and respond to all platform feedback, bug reports, and support inquiries submitted by users. Tickets can be prioritized and assigned to team members here.</p>
-          </div>
-        );
       default:
         return (
           <div className="mt-6 p-12 bg-white rounded-xl shadow-lg border border-gray-100">
@@ -226,6 +207,17 @@ const AdminPanelComponent = () => {
 
   return (
   <div className="min-h-screen bg-gray-50 font-sans antialiased p-4 sm:p-6 lg:p-8">
+      <div className="flex items-center justify-between mb-4">
+        <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
+        <div>
+          <button
+            onClick={async () => { try { await logout(); } catch (err) { console.warn('Logout failed', err); } }}
+            className="px-3 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition"
+          >
+            Logout
+          </button>
+        </div>
+      </div>
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
         {summaryStats.map((stat: any) => (
           <StatsCard key={stat.title} {...stat} />
