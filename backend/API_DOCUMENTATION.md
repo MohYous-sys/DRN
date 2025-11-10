@@ -8,6 +8,8 @@
 
 ## Campaigns API (`/api/campaigns`)
 
+> **Important**: All campaign responses return the `Due` field as a **string in YYYY-MM-DD format** (e.g., "2025-12-31"), regardless of the format sent in requests. This ensures consistent date handling across the API.
+
 ### `GET /` - Get All Campaigns
 Returns all active (non-deleted) campaigns with current fundraising amounts and number of donators. Deleted campaigns are excluded from this list.
 
@@ -34,8 +36,10 @@ Returns all active (non-deleted) campaigns with current fundraising amounts and 
 - `Title`, `Location`, `Urgency`, `Description`, `Image` (strings)
 - `Goal` (number): Fundraising target
 - `CurrentAmount` (number): Amount raised (auto-updated from donations)
-- `Due` (string): Deadline date (YYYY-MM-DD)
+- `Due` (string): Deadline date **always returned as a string in YYYY-MM-DD format** (e.g., "2025-12-31")
 - `numberOfDonators` (number): Count of unique users who have donated to this campaign
+
+> **Note**: The `Due` field is **always** returned as a string in `YYYY-MM-DD` format, regardless of how it was sent in the request. This ensures consistent date formatting across all API responses.
 
 ### `POST /` - Create Campaign (Auth Required)
 Creates a new campaign. `CurrentAmount` starts at 0.00.

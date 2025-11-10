@@ -45,6 +45,17 @@ function formatDateForDB(dateValue) {
   return dateValue;
 }
 
+// Helper to ensure Due is returned as a YYYY-MM-DD string in API responses
+function formatDueForResponse(due) {
+  if (!due) return due;
+  if (due instanceof Date) {
+    return formatDateForDB(due);
+  }
+  const str = String(due);
+  const match = str.match(/^(\d{4}-\d{2}-\d{2})/);
+  return match ? match[1] : str;
+}
+
 // Get all campaigns
 router.get('/', async (req, res) => {
   let conn;
@@ -67,7 +78,7 @@ router.get('/', async (req, res) => {
       ...campaign,
       numberOfDonators: Number(campaign.numberOfDonators) || 0,
       // Ensure Due date is always returned as a string in YYYY-MM-DD format
-      Due: campaign.Due ? String(campaign.Due).split('T')[0] : campaign.Due
+      Due: formatDueForResponse(campaign.Due)
     }));
     
     res.json(campaigns);
@@ -91,7 +102,7 @@ router.post('/', login_required, async (req, res) => {
     res.status(201).json({ 
       id: Number(result.insertId), 
       ...req.body,
-      Due: formattedDue,
+      Due: formatDueForResponse(formattedDue), // Ensure Due is always returned as YYYY-MM-DD string
       CurrentAmount: 0.00,
       isDeleted: 0
     });
