@@ -80,7 +80,7 @@ const AdminPanelComponent = () => {
   const [error, setError] = useState<string | null>(null);
   const [editingCampaign, setEditingCampaign] = useState<any | null>(null);
 
-  const tabs = ['Campaigns', 'Donations', 'Users'];
+  const tabs = ['Campaigns', 'Donations'];
 
   const summaryStats = statsData
     ? [
@@ -208,27 +208,6 @@ const AdminPanelComponent = () => {
               </div>
             )}
             {!loading && !donations && <p className="text-gray-500">No donations data available.</p>}
-          </div>
-        );
-      case 'Users':
-        return (
-          <div className="mt-6 p-6 bg-white rounded-xl shadow-lg border border-gray-100 transition-opacity duration-300">
-            <h2 className="text-2xl font-bold text-blue-600 mb-4">User Account Management</h2>
-            <p className="text-gray-600">The backend currently exposes session status but not a public "list users" endpoint. You can use the session status to confirm admin login.</p>
-            <button
-              onClick={async () => {
-                setLoading(true); setError(null);
-                try {
-                  const s = await api.getSessionStatus();
-                  alert(JSON.stringify(s));
-                } catch (err: any) {
-                  setError(err.message || 'Failed to fetch session');
-                } finally { setLoading(false); }
-              }}
-              className="mt-3 px-4 py-2 bg-red-600 text-white rounded"
-            >
-              Check Session Status
-            </button>
           </div>
         );
       default:
