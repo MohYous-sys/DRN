@@ -51,7 +51,16 @@ const CampaignModal: React.FC<CampaignModalProps> = ({ campaign, onClose, onSave
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <input value={form.Title} onChange={e => handleChange('Title', e.target.value)} placeholder="Title" className="p-2 border rounded" />
             <input value={form.Location} onChange={e => handleChange('Location', e.target.value)} placeholder="Location" className="p-2 border rounded" />
-            <input value={form.Urgency} onChange={e => handleChange('Urgency', e.target.value)} placeholder="Urgency" className="p-2 border rounded" />
+            <div className="flex items-center p-2">
+              <input 
+                type="checkbox" 
+                id="urgency"
+                checked={form.Urgency === 'urgent'} 
+                onChange={e => handleChange('Urgency', e.target.checked ? 'urgent' : '')} 
+                className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+              />
+              <label htmlFor="urgency" className="ml-2 text-gray-700">Mark as Urgent</label>
+            </div>
             <input value={form.Due} onChange={e => handleChange('Due', e.target.value)} placeholder="Due (YYYY-MM-DD)" className="p-2 border rounded" />
             <input value={form.Image} onChange={e => handleChange('Image', e.target.value)} placeholder="Image URL" className="p-2 border rounded md:col-span-2" />
             <input value={form.Goal} onChange={e => handleChange('Goal', Number(e.target.value))} placeholder="Goal" type="number" className="p-2 border rounded" />
