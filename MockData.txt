@@ -1,0 +1,46 @@
+Users:
+
+Username: Tariq
+Password: 123456
+
+Username: Abdullah
+Password: 654321
+
+Username: Khaled
+Password: 135642
+
+
+Campaigns:
+
+Campaign Title: Latakia Wild Fires
+Campaign Location: Latakia, Syria
+Campaign Description: Beirut’s coast is suffering from severe pollution. This campaign supports cleanups, awareness efforts, and sustainable waste solutions to restore the city’s shoreline and protect marine life.
+Campaign Urgency: True
+Campaign Image: https://images.pexels.com/photos/28318169/pexels-photo-28318169.jpeg
+Campaign Goal: 10000
+Campaign Due: 2025/01/02
+
+Campaign Title: Beirut Earthquake Recovery
+Campaign Location: Beirut, Lebanon
+Campaign Description:
+A recent earthquake has left parts of Beirut in ruins, displacing families and damaging vital infrastructure. This campaign focuses on providing emergency relief, rebuilding homes, and supporting recovery efforts to help affected residents regain stability and safety.
+Campaign Urgency: True
+Campaign Image: https://images.pexels.com/photos/15558948/pexels-photo-15558948.jpeg
+Campaign Goal: 8000
+Campaign Due: 2025/03/10
+
+Campaign Title: Flood Relief Initiative
+Campaign Location: Basra, Iraq
+Campaign Description: Heavy rains have caused severe flooding in Basra, displacing families and damaging homes. This campaign aims to provide clean water, food, and temporary shelters for affected communities while supporting local rebuilding efforts.
+Campaign Urgency: True
+Campaign Image: https://images.pexels.com/photos/6225834/pexels-photo-6225834.jpeg
+Campaign Goal: 12000
+Campaign Due: 2025/02/15
+
+Campaign Title: Jordan Drought Relief
+Campaign Location: Amman, Jordan
+Campaign Description: Jordan faces worsening droughts that threaten water supplies and agriculture. This campaign funds water conservation projects and technologies to support communities and protect farmlands.
+Campaign Urgency: True
+Campaign Image: https://images.pexels.com/photos/632252/pexels-photo-632252.jpeg
+Campaign Goal: 9000
+Campaign Due: 2025/04/05
