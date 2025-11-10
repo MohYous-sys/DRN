@@ -65,7 +65,7 @@ const CampaignCard: React.FC<CampaignCardProps> = ({
 
         <p className="text-gray-700 mb-4 text-sm">{description}</p>
         <p className="text-xs text-gray-600 mb-4">
-          **Latest Update:** {update}
+          <b>Latest Update:</b> {update}
         </p>
 
         <div className="mb-1" role="progressbar" aria-valuenow={safeRaised} aria-valuemin={0} aria-valuemax={safeGoal}>

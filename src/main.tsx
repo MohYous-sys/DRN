@@ -9,6 +9,7 @@ import TestimonialsSection from './Testimonies.tsx'
 import LiveUpdatesSection from './LiveUpdates.tsx'
 import AdminPanel from "./AdminPanel.tsx";
 import { AuthProvider, useAuth } from './auth/AuthContext';
+import DisasterResponseFooter from "./footer.tsx";
 
 const App = () => {
   const { user } = useAuth();
@@ -24,6 +25,7 @@ const App = () => {
       <TrustSection />
       <TestimonialsSection />
       <LiveUpdatesSection />
+      <DisasterResponseFooter />
     </>
   );
 };
