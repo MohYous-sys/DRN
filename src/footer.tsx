@@ -3,7 +3,7 @@ import { Activity, ActivityIcon } from 'lucide-react';
 
 const DisasterResponseFooter = () => {
   return (
-    <footer className="bg-[#1a1c22] text-white pt-10 pb-5 px-4 sm:px-8 md:px-12 text-center">
+    <footer className="bg-[#1a1c22] text-white pt-10 pb-12 px-4 sm:px-8 md:px-12 text-center">
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row items-center justify-center text-center gap-8 border-b border-gray-700/50 pb-8">
 

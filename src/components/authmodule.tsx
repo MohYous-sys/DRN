@@ -12,6 +12,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   const [password, setPassword] = useState('');
 
   const [message, setMessage] = useState('');
+  const [messageType, setMessageType] = useState<'error' | 'success' | ''>('');
 
   interface AuthActionEvent extends React.FormEvent<HTMLFormElement> {}
 
@@ -36,9 +37,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
 
       const data = await res.json().catch(() => ({}));
 
-      if (res.ok) {
+    if (res.ok) {
   const successMessage = data.message || `${activeTab} successful.`;
   setMessage(successMessage);
+  setMessageType('success');
   setUsername('');
         setPassword('');
 
@@ -66,7 +68,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
           setMessage('');
           handleClose();
         }, 1000);
-      } else {
+        } else {
         if (res.status === 409) {
           setMessage(data.error || 'Username already exists.');
         } else if (res.status === 401 || res.status === 403) {
@@ -74,13 +76,15 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
         } else {
           setMessage(data.error || 'An error occurred.');
         }
+        setMessageType('error');
       }
     } catch (err: any) {
       console.error('Auth request failed', err);
       setMessage('Network error — please try again.');
+      setMessageType('error');
     } finally {
       setLoading(false);
-      setTimeout(() => setMessage(''), 3000);
+      setTimeout(() => { setMessage(''); setMessageType(''); }, 3000);
     }
   };
 
@@ -90,6 +94,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
     setUsername('');
     setPassword('');
     setMessage('');
+    setMessageType('');
     if (onClose) onClose();
   };
 
@@ -98,7 +103,10 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
   return (
     <div onClick={handleClose} style={{ zIndex: 99999 }} className="fixed inset-0 bg-black bg-opacity-60 font-sans antialiased flex items-center justify-center p-4">
     {message && (
-      <div style={{ zIndex: 100000 }} className="fixed top-4 right-4 bg-red-500 text-white p-3 rounded-lg shadow-xl transition-opacity duration-300 animate-slide-in">
+      <div
+        style={{ zIndex: 100000 }}
+        className={`fixed top-4 right-4 ${messageType === 'success' ? 'bg-green-500' : 'bg-red-500'} text-white p-3 rounded-lg shadow-xl transition-opacity duration-300 animate-slide-in`}
+      >
         {message}
       </div>
     )}
@@ -185,7 +193,7 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
               disabled={!isFormValid || loading}
               className={`w-full py-3 rounded-lg text-white font-semibold tracking-wide transition-all duration-200 ${
                 isFormValid && !loading
-                  ? 'bg-indigo-900 hover:bg-indigo-700 shadow-md'
+                  ? 'bg-black hover:bg-gray-800 shadow-md'
                   : 'bg-gray-500 cursor-not-allowed opacity-75'
               }`}
             >
@@ -193,12 +201,14 @@ const AuthModal: React.FC<AuthModalProps> = ({ onClose }) => {
             </button>
           </form>
 
-          {activeTab === 'Login' && (
+          {activeTab === 'Login' ? (
             <div className="mt-4 text-center pb-6">
               <a href="#" className="text-sm font-medium text-gray-500 hover:text-indigo-600 transition">
                 Forgot password?
               </a>
             </div>
+          ) : (
+            <div className="mt-4 h-6" />
           )}
         </div>
       </div>
