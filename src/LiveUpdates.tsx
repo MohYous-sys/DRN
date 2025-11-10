@@ -126,7 +126,7 @@ const LiveUpdatesSection = () => {
           <div>
             <div className="flex items-center gap-2 mb-6">
               <Radio className="w-6 h-6 text-red-500 animate-pulse" /> 
-              <h2 className="text-2xl font-bold text-gray-900">Live Updates</h2>
+              <h2 className="text-2xl font-bold text-gray-900">Updates</h2>
             </div>
 
             <div className="space-y-4">
