@@ -1,73 +1,73 @@
-# React + TypeScript + Vite
+# Disaster Response Network (DRN)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Full-stack web application for managing disaster relief campaigns, donations, and donor tracking.
 
-Currently, two official plugins are available:
+## Tech Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+**Frontend:** React , TypeScript, Vite, Tailwind CSS  
+**Backend:** Node.js, Express, MariaDB  
+**Auth:** Session-based (express-session, bcrypt)
 
-## React Compiler
+## Prerequisites
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- Node.js
+- MariaDB (port 8800)
+- npm
 
-## Expanding the ESLint configuration
+## Quick Start
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Database Setup
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Create the database and user using HeidiSQL (or any MariaDB client). The backend automatically initializes the schema via `backend/database.js` on first run.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+### Environment Configuration
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+Create `backend/.env` with database credentials and server configuration. Refer to `backend/db.js` and `backend/index.js` for required variables.
+
+### Running the System
+
+```powershell
+.\start-dev.ps1
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+The script installs dependencies and starts both backend and frontend servers. The backend automatically initializes the database schema (`backend/database.js`) on first run.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Server URLs
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:3001
+- API Base: http://localhost:3001/api
+
+## Project Structure
+
 ```
+.
+├── backend/              # Express server
+│   ├── routes/          # API endpoints
+│   ├── database.js      # Schema initialization
+│   └── .env            # Backend configuration
+├── src/                 # React frontend
+│   ├── components/     # UI components
+│   └── api/           # API client
+└── start-dev.ps1       # Development startup script
+```
+
+## Key Features
+
+- **Campaigns:** CRUD operations with soft delete (preserves donation history)
+- **Donations:** Transaction-based creation with automatic campaign amount updates
+- **Authentication:** Session-based with admin/user roles
+- **Statistics:** Real-time aggregation (total donations, supplies, donors, campaigns)
+- **Top Donators:** Leaderboard with total donation amounts
+
+## API Documentation
+
+- **[API_DOCUMENTATION.md](./backend/API_DOCUMENTATION.md)** - Complete API reference
+- **[RESPONSE_CODES.md](./backend/RESPONSE_CODES.md)** - HTTP status codes reference
+
+## Notes
+
+- Campaign deletion is soft delete (preserves stats and donations)
+- All campaign `Due` dates returned as `YYYY-MM-DD` strings
+- CORS configured for `localhost:5173` with credentials
+- Vite proxy handles `/api/*` requests to backend
