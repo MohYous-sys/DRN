@@ -1,0 +1,26 @@
+Donation{
+“ID”: int,
+“Amount”: int,
+“Supplies”: list of strings,
+“Donor”: int(reference to User ID)
+}
+
+
+User{
+“ID”: int,
+“Username”: string,
+“Password”: string
+“Donations”: list of donation IDs(reference to Donation IDs),
+}
+
+Campaign{
+“ID”: int,
+“Title”: string,
+“Location” string,
+“Urgency”: string,
+“Description”: string,
+“Image”: string(image url),
+“Goal”: int,
+“Due”: string
+}
+

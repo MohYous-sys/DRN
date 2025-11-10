@@ -1,42 +1,58 @@
-import React from 'react';
+import { useEffect, useState } from 'react';
 import CampaignCard from './components/CampainCard.tsx';
 import RecentDonations from './components/RecentDonations.tsx';
 
-const campaigns = [
-  {
-    title: "Northern California Wildfire Emergency",
-    location: "Northern California, USA",
-    description: "Rapidly spreading wildfire threatening 12,000 residents. Immediate evacuation and aerial surveillance needed.",
-    update: "47 residents evacuated. Deploying 5 additional drones for surveillance.",
-    raised: 45000,
-    goal: 100000,
-    supporters: 342,
-    time: "2 hours",
-    isCritical: true,
-    imageSrc: 'https://images.pexels.com/photos/3552472/pexels-photo-3552472.jpeg', // Placeholder image
-  },
-  {
-    title: "Bangladesh Delta Monsoon Flooding Season",
-    location: "Bangladesh Delta",
-    description: "Severe monsoon flooding affecting 50,000 people. Emergency supplies and medical aid urgently needed.",
-    update: "Water levels rising at 3cm/hour. Medical teams on-site, setting up clinics.",
-    raised: 78000,
-    goal: 150000,
-    supporters: 521,
-    time: "6 hours",
-    isCritical: false,
-    imageSrc: 'https://images.pexels.com/photos/2382896/pexels-photo-2382896.jpeg', // Placeholder image
-  }
-];
+type CampaignRow = {
+  ID?: number;
+  Title?: string;
+  Location?: string;
+  Description?: string;
+  Image?: string;
+  Goal?: number;
+  CurrentAmount?: number;
+  Due?: string;
+  Urgency?: string;
+  numberOfDonators?: number;
+};
 
-const donations = [
-  { initial: 'M', name: 'Maria S.', amount: 1000, campaign: 'to California Wildfire', time: 'just now' },
-  { initial: 'A', name: 'Alex K.', amount: 500, campaign: 'to Florida Hurricane', time: '2 min ago' },
-  { initial: 'M', name: 'Maria S.', amount: 100 , campaign: 'to Bangladesh Flood Relief', time: '4 min ago' },
-  { initial: 'A', name: 'Alex K.', amount: 100, campaign: 'to Bangladesh Flood Relief', time: '6 min ago' },
-];
 
 function CampaignsComponent() {
+  const [campaigns, setCampaigns] = useState<CampaignRow[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('/api/campaigns');
+        if (!res.ok) throw new Error(`Status ${res.status}`);
+        const data = await res.json();
+        if (mounted) setCampaigns(data || []);
+      } catch (err: any) {
+        console.error('Failed to load campaigns', err);
+        if (mounted) setError(err.message || 'Failed to load campaigns');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+    load();
+
+    const handleDonationCompleted = () => {
+      if (mounted) {
+        load(); 
+      }
+    };
+    window.addEventListener('donation:completed', handleDonationCompleted);
+
+    return () => { 
+      mounted = false;
+      window.removeEventListener('donation:completed', handleDonationCompleted);
+    };
+  }, []);
+
   return (
     <div className="pb-12 bg-gray-50 px-4 sm:px-6 lg:px-8">
       
@@ -52,13 +68,27 @@ function CampaignsComponent() {
       <main className="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-8">
         
         <section className="lg:col-span-2 grid grid-cols-1 md:grid-cols-2 gap-6">
-          {campaigns.map((campaign, index) => (
-            <CampaignCard key={index} {...campaign} />
-          ))}
+          {campaigns.map((row, index) => {
+            const campaignProps = {
+                title: row.Title || 'Untitled Campaign',
+                location: row.Location || 'Unknown',
+                description: row.Description || '',
+                update: row.Urgency || 'No updates',
+                raised: Number(row.CurrentAmount || 0),
+                goal: Number(row.Goal || 0),
+                supporters: Number((row as any).numberOfDonators || 0),
+                time: row.Due || 'N/A',
+                isCritical: (row.Urgency || '').toLowerCase() === 'critical',
+                imageSrc: row.Image || ''
+            };
+            return <CampaignCard key={row.ID ?? index} {...campaignProps} campaignId={row.ID} />;
+          })}
+          {loading && <div className="col-span-full text-center text-sm text-gray-500 mt-4">Loading campaigns...</div>}
+          {error && <div className="col-span-full text-center text-sm text-red-500 mt-4">Error: {error}</div>}
         </section>
 
         <aside className="lg:col-span-1">
-          <RecentDonations donations={donations} />
+          <RecentDonations />
         </aside>
 
       </main>

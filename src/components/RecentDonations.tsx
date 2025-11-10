@@ -1,6 +1,4 @@
-// src/components/RecentDonations.jsx
-
-import React from 'react';
+import { useEffect, useState } from 'react';
 
 interface DonationItemProps {
   initial: string;
@@ -27,10 +25,57 @@ const DonationItem = ({ initial, name, amount, campaign, time }: DonationItemPro
 );
 
 interface RecentDonationsProps {
-  donations: DonationItemProps[];
+  donations?: DonationItemProps[];
 }
 
 const RecentDonations = ({ donations }: RecentDonationsProps) => {
+  const [items, setItems] = useState<DonationItemProps[]>(donations || []);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let mounted = true;
+    if (donations && donations.length > 0) return;
+
+    const load = async () => {
+      setLoading(true);
+      setError(null);
+      try {
+        const [donRes, campRes] = await Promise.all([
+          fetch('/api/donations', { credentials: 'include' }),
+          fetch('/api/campaigns', { credentials: 'include' })
+        ]);
+        if (!donRes.ok) throw new Error(`Donations status ${donRes.status}`);
+        if (!campRes.ok) throw new Error(`Campaigns status ${campRes.status}`);
+        const donData = await donRes.json();
+        const campData = await campRes.json();
+
+        const campaignMap = new Map<number, string>();
+        campData.forEach((c: any) => campaignMap.set(c.ID, c.Title || 'Unknown'));
+
+        const mapped = (donData || []).slice(0, 10).map((d: any) => {
+          const name = d.DonorUsername || 'Anonymous';
+          const nameStr = String(name || 'Anonymous');
+          const initial = nameStr ? nameStr.charAt(0).toUpperCase() : 'A';
+          const amount = Number(d.Amount || 0);
+          const campaign = campaignMap.get(Number(d.CampaignID)) || 'General Fund';
+          const time = d.CreatedAt || d.created_at || 'just now';
+          return { initial, name: nameStr, amount, campaign, time } as DonationItemProps;
+        });
+
+        if (mounted) setItems(mapped);
+      } catch (err: any) {
+        console.error('Failed to load recent donations', err);
+        if (mounted) setError(err.message || 'Failed to load donations');
+      } finally {
+        if (mounted) setLoading(false);
+      }
+    };
+
+    load();
+    return () => { mounted = false; };
+  }, [donations]);
+
   return (
     <div className="bg-white p-6 rounded-lg shadow-lg border border-gray-100">
       <h3 className="text-lg font-bold text-red-600 mb-4 flex items-center">
@@ -38,7 +83,9 @@ const RecentDonations = ({ donations }: RecentDonationsProps) => {
         Recent Donations
       </h3>
       <div>
-        {donations.map((d, index) => (
+        {loading && <p className="text-sm text-gray-500">Loading recent donations...</p>}
+        {error && <p className="text-sm text-red-500">Error: {error}</p>}
+        {items.map((d, index) => (
           <DonationItem key={index} {...d} />
         ))}
       </div>
