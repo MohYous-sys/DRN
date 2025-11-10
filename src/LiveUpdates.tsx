@@ -42,7 +42,7 @@ const getBadgeClasses = (badgeType: BadgeType | null = null, variant: BadgeVaria
 };
 
 const LiveUpdatesSection = () => {
-  const liveUpdates = [
+  const liveUpdates: LiveUpdate[] = [
     {
       icon: Radio,
       title: "AI Sensor Alert: Temperature Spike Detected",
@@ -120,7 +120,7 @@ const LiveUpdatesSection = () => {
   }, []);
 
   return (
-    <section className="py-16 px-4 bg-gray-50">
+    <section id="live-updates" className="py-16 px-4 bg-gray-50">
       <div className="container mx-auto max-w-7xl">
         <div className="grid lg:grid-cols-2 gap-8">
           <div>

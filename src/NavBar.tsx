@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import type { MouseEvent } from "react";
 import "./navbar.css";
 import AuthModule from "./components/authmodule.tsx";
 import { useAuth } from './auth/AuthContext';
@@ -19,6 +20,26 @@ const Navbar = () => {
   const handleLoginClick = () => {
     console.log('Login button clicked — opening auth modal');
     setAuthModalOpen(true);
+  };
+
+  const navItems = [
+    { label: 'How it Works', id: 'trust-section' },
+    { label: 'Our Impacts', id: 'live-updates' },
+    { label: 'Donate Now', id: 'campains' },
+  ];
+
+  const scrollToSection = (e: MouseEvent, id: string) => {
+    e.preventDefault();
+    console.log('Nav click for', id);
+    const el = document.getElementById(id);
+    if (el) {
+      console.log('Found element, scrolling', el);
+      el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', `#${id}`);
+    } else {
+      console.warn('Element not found for id', id);
+      window.location.hash = id;
+    }
   };
 
   return (
@@ -43,18 +64,19 @@ const Navbar = () => {
         </div>
 
         <ul className="flex items-center gap-6">
-        {["About", "Impact", "Our Causes", "Get Involved"].map((item) => (
-          <li key={item}>
-          <a
-            href={`#${item.toLowerCase().replace(" ", "")}`}
-            className={`font-semibold transition-colors ${
-            scrolled
-              ? "text-sky-950 hover:text-gray-900"
-              : "text-sky-50 hover:text-gray-100"
-            }`}
-          >
-            {item}
-          </a>
+        {navItems.map((item) => (
+          <li key={item.id}>
+            <a
+              href={`#${item.id}`}
+              onClick={(e) => scrollToSection(e, item.id)}
+              className={`font-semibold transition-colors ${
+                scrolled
+                  ? "text-sky-950 hover:text-gray-900"
+                  : "text-sky-50 hover:text-gray-100"
+              }`}
+            >
+              {item.label}
+            </a>
           </li>
         ))}
 

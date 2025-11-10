@@ -54,7 +54,7 @@ function CampaignsComponent() {
   }, []);
 
   return (
-    <div className="pb-12 bg-gray-50 px-4 sm:px-6 lg:px-8">
+    <div id="campains" className="pb-12 bg-gray-50 px-4 sm:px-6 lg:px-8">
       
       <header className="max-w-4xl mx-auto text-center mb-10">
         <h1 className="text-3xl sm:text-4xl font-extrabold text-gray-900 mb-2">

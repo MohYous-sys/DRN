@@ -1,5 +1,6 @@
 import { Activity } from "lucide-react";
 import { useState } from "react";
+import type { MouseEvent } from 'react';
 import AuthModule from "./components/authmodule.tsx";
 import { useAuth } from './auth/AuthContext';
 
@@ -23,15 +24,39 @@ const Header = () => {
           </div>
 
           <nav className="hidden md:flex items-center gap-8">
-            <a href="#how-it-works" className="text-sm font-medium text-foreground hover:text-emergency transition-colors">
+            <a
+              href="#trust-section"
+              onClick={(e: MouseEvent) => {
+                e.preventDefault();
+                const el = document.getElementById('trust-section');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="text-sm font-medium text-foreground hover:text-emergency transition-colors"
+            >
               How It Works
             </a>
-            <a href="#our-impact" className="text-sm font-medium text-foreground hover:text-emergency transition-colors">
+            <a
+              href="#live-updates"
+              onClick={(e: MouseEvent) => {
+                e.preventDefault();
+                const el = document.getElementById('live-updates');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="text-sm font-medium text-foreground hover:text-emergency transition-colors"
+            >
               Our Impact
             </a>
-            <button className="bg-black text-white font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-800 transition">
+            <a
+              href="#campains"
+              onClick={(e: MouseEvent) => {
+                e.preventDefault();
+                const el = document.getElementById('campains');
+                if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+              }}
+              className="bg-black text-white font-semibold px-4 py-2 rounded-md shadow hover:bg-gray-800 transition"
+            >
               Donate Now
-            </button>
+            </a>
             {user ? (
               <div className="flex items-center gap-4">
                 <span className="text-sm font-medium text-foreground">{user.username}</span>
